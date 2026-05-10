@@ -61,6 +61,15 @@ For end-to-end gates, `scripts/playtest.sh` plays a deterministic full game agai
 - Inside the emulator, the WSL2 host is reachable at **`10.0.2.2`**, not `localhost`. The dev script handles this via `--dart-define`.
 - KVM is available (`/dev/kvm`, `kvm` group). Don't try Hyper-V tools alongside.
 
+## Emulator coexistence — important
+
+There may be other AI agents on this machine running their own AVDs. **Do not touch any emulator that isn't ours.**
+
+- Our emulator binds to **port 5582** (device ID `emulator-5582`). PID lives in `/tmp/bagina-emulator.pid`.
+- `scripts/run-emulator.sh` only ever starts/checks/owns that one instance and refuses to take the port if it's already busy.
+- `scripts/stop-emulator.sh` only kills our PID and our device ID.
+- If you ever find yourself running `adb -s emulator-5554 emu kill`, stop. That's somebody else's.
+
 ## Pi deployment
 
 The Pi at `333133333.xyz` runs an `nginx_dewi` reverse proxy on 80/443. The server lives behind `/bagina/` on that nginx. See `infra/pi/README.md` for the deploy flow. Do not change the existing nginx vhost set — only add a new location block.

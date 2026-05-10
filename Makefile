@@ -3,10 +3,12 @@
 # Toolchain paths (override with env if needed)
 FLUTTER_BIN ?= /home/dewi/code/flutter/bin/flutter
 ANDROID_SDK ?= /home/dewi/code/android-sdk
-ADB        ?= $(ANDROID_SDK)/platform-tools/adb
-EMULATOR   ?= $(ANDROID_SDK)/emulator/emulator
-AVD_NAME   ?= bagino
-PI_HOST    ?= pi@333133333.xyz
+ADB         ?= $(ANDROID_SDK)/platform-tools/adb
+EMULATOR    ?= $(ANDROID_SDK)/emulator/emulator
+AVD_NAME    ?= bagino
+EMU_PORT    ?= 5582
+DEVICE_ID   ?= emulator-$(EMU_PORT)
+PI_HOST     ?= pi@333133333.xyz
 
 help:
 	@echo "Bagino Bagina — top-level make targets"
@@ -54,10 +56,13 @@ dev-server:
 	pnpm --filter server run dev
 
 dev-client:
-	cd client && $(FLUTTER_BIN) run --dart-define=SERVER_HOST=10.0.2.2
+	bash scripts/dev-client.sh emulator
 
 emulator:
 	bash scripts/run-emulator.sh
+
+emulator-stop:
+	bash scripts/stop-emulator.sh
 
 playtest:
 	bash scripts/playtest.sh
