@@ -19,15 +19,12 @@ services:
     volumes:
       - bagina-data:/data
     networks:
-      - default
-      - nginx_net
+      - bin_private
 
 volumes:
   bagina-data:
 
 networks:
-  default:
-  # External network shared with nginx_dewi so it can reach us by name.
-  nginx_net:
+  # User-defined bridge shared with nginx_dewi so it can reach us by name.
+  bin_private:
     external: true
-    name: bridge
