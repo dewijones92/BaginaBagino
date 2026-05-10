@@ -62,9 +62,13 @@ class GameStateNotifier extends StateNotifier<GameStateSnapshot?> {
   final BaginaSocket socket;
   late final dynamic _sub;
   String? _youId;
+  GameEndedEvent? _lastEnded;
+  HomeworkRevealedEvent? _lastHomeworkReveal;
 
   String? get currentRoomCode => state?.code;
   String? get youId => _youId;
+  GameEndedEvent? get lastEnded => _lastEnded;
+  HomeworkRevealedEvent? get lastHomeworkReveal => _lastHomeworkReveal;
 
   void _onEvent(ServerEvent event) {
     switch (event) {
@@ -84,7 +88,10 @@ class GameStateNotifier extends StateNotifier<GameStateSnapshot?> {
         }
         break;
       case GameEndedEvent():
-        // We rely on a follow-up StateSnapshot to set phase to finished.
+        _lastEnded = event;
+        break;
+      case HomeworkRevealedEvent():
+        _lastHomeworkReveal = event;
         break;
       case PlayerLeftEvent() when state?.activePlayerId == event.playerId:
         // Nothing to do — server will send a fresh snapshot.
