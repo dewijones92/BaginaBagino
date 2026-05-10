@@ -10,9 +10,15 @@
  *   - no extra Dart toolchain step (build_runner) and no extra deps
  */
 
-import { writeFileSync, mkdirSync } from 'node:fs';
-import { dirname } from 'node:path';
+import { writeFileSync, mkdirSync, readFileSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { z, ZodTypeAny } from 'zod';
+
+const DATA_DIR = resolve(dirname(fileURLToPath(import.meta.url)), '..', 'data');
+function loadJson<T>(name: string): T {
+  return JSON.parse(readFileSync(resolve(DATA_DIR, name), 'utf-8')) as T;
+}
 
 import {
   CreateRoomAction,
@@ -557,13 +563,58 @@ function literalDiscriminatorValue(obj: z.ZodObject<any>, key: string): string {
 }
 
 // ---------------------------------------------------------------------------
+// Constants emitter — reads packages/schema/data/*.json and emits matching
+// Dart constants so the client can use the same values without copy-paste.
+
+type BalanceJson = {
+  recipes: Record<string, Record<string, number>>;
+};
+type BoardJson = { slots: { index: number; kind: string }[] };
+
+function emitConstants(): string {
+  const balance = loadJson<BalanceJson>('balance.json');
+  const board = loadJson<BoardJson>('board.json');
+  const out: string[] = [];
+
+  // Completion recipes: { 'bagino' | 'bagina' → { Tooth: n, Paw: n, ... } }
+  // Emitted as a Dart const map keyed by CompletionKind and CardKind so the
+  // client compiler enforces the same string set the server uses.
+  out.push('// -- Game balance constants (from packages/schema/data/balance.json)');
+  out.push('const Map<CompletionKind, Map<CardKind, int>> kRecipes = {');
+  for (const [completionRaw, requirements] of Object.entries(balance.recipes)) {
+    const completion = identifierize(completionRaw);
+    out.push(`  CompletionKind.${completion}: {`);
+    for (const [kindRaw, count] of Object.entries(requirements)) {
+      const kind = identifierize(kindRaw);
+      out.push(`    CardKind.${kind}: ${count},`);
+    }
+    out.push('  },');
+  }
+  out.push('};');
+  out.push('');
+  out.push('/// Total card count required for a completion declaration.');
+  out.push('int recipeCardCount(CompletionKind k) =>');
+  out.push('    kRecipes[k]!.values.fold(0, (a, b) => a + b);');
+  out.push('');
+
+  // Poo slot indexes — derived from board.json so a layout change auto-syncs.
+  const pooSlots = board.slots.filter((s) => s.kind === 'poo').map((s) => s.index);
+  out.push('// -- Board layout constants (from packages/schema/data/board.json)');
+  out.push(`const List<int> kPooSlots = [${pooSlots.join(', ')}];`);
+  out.push(`const int kTotalSlots = ${board.slots.length};`);
+  out.push('');
+
+  return out.join('\n');
+}
+
+// ---------------------------------------------------------------------------
 // Main
 
 function main() {
   const ctx = buildContext();
   const out: string[] = [];
   out.push('// GENERATED FILE — do not edit by hand.');
-  out.push('// Source of truth: packages/schema/src/*.ts (Zod).');
+  out.push('// Source of truth: packages/schema/src/*.ts (Zod) + packages/schema/data/*.json.');
   out.push('// Regenerate with: pnpm --filter @bagina/schema run gen');
   out.push('// ignore_for_file: type=lint');
   out.push('');
@@ -583,6 +634,8 @@ function main() {
   for (const [name, def] of ctx.unions) {
     out.push(emitUnion(name, def, ctx));
   }
+
+  out.push(emitConstants());
 
   const content = out.join('\n');
   const target = process.argv[2] ?? '../../client/lib/wire/wire.dart';

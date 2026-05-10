@@ -87,32 +87,52 @@ class _BoardPageState extends ConsumerState<BoardPage> {
     );
   }
 
-  // Show the player how close they are to a Bagino (3 Tooth + 2 Paw + 1 Snout)
-  // or a Bagina (2 Tooth + 3 Paw + 1 Tit) so resource cards feel useful.
+  // Show the player how close they are to each completion. Recipe numbers come
+  // from the generated `kRecipes` (packages/schema/data/balance.json) — adjust
+  // them there, both server and client follow.
   String _handHint(GameStateSnapshot state) {
     int count(CardKind k) => state.hand.where((c) => c.kind == k).length;
-    final teeth = count(CardKind.tooth);
-    final paws = count(CardKind.paw);
-    final snouts = count(CardKind.snout);
-    final tits = count(CardKind.tit);
-    final baginoMissing = [
-      if (teeth < 3) '${3 - teeth} more Tooth',
-      if (paws < 2) '${2 - paws} more Paw',
-      if (snouts < 1) '${1 - snouts} Snout',
-    ];
-    final baginaMissing = [
-      if (teeth < 2) '${2 - teeth} more Tooth',
-      if (paws < 3) '${3 - paws} more Paw',
-      if (tits < 1) '${1 - tits} Tit',
-    ];
+
+    List<String> missing(CompletionKind kind) {
+      final recipe = kRecipes[kind]!;
+      return [
+        for (final e in recipe.entries)
+          if (count(e.key) < e.value)
+            e.value > 1
+                ? '${e.value - count(e.key)} more ${_kindLabel(e.key)}'
+                : '1 ${_kindLabel(e.key)}',
+      ];
+    }
+
+    String ingredients(CompletionKind kind) {
+      final recipe = kRecipes[kind]!;
+      return recipe.entries
+          .map((e) => '${e.value} ${_kindLabel(e.key, plural: e.value > 1)}')
+          .join(' + ');
+    }
+
+    final baginoMissing = missing(CompletionKind.bagino);
+    final baginaMissing = missing(CompletionKind.bagina);
     if (baginoMissing.isEmpty) {
-      return 'Tap 3 Teeth + 2 Paws + 1 Snout, then "Declare!"';
+      return 'Tap ${ingredients(CompletionKind.bagino)}, then "Declare!"';
     }
     if (baginaMissing.isEmpty) {
-      return 'Tap 2 Teeth + 3 Paws + 1 Tit, then "Declare!"';
+      return 'Tap ${ingredients(CompletionKind.bagina)}, then "Declare!"';
     }
-    final closer = baginoMissing.length <= baginaMissing.length ? ('Bagino', baginoMissing) : ('Bagina', baginaMissing);
+    final closer = baginoMissing.length <= baginaMissing.length
+        ? ('Bagino', baginoMissing)
+        : ('Bagina', baginaMissing);
     return 'Closest to ${closer.$1}: need ${closer.$2.join(' + ')}.';
+  }
+
+  String _kindLabel(CardKind k, {bool plural = false}) {
+    switch (k) {
+      case CardKind.tooth: return plural ? 'Teeth' : 'Tooth';
+      case CardKind.paw: return plural ? 'Paws' : 'Paw';
+      case CardKind.snout: return plural ? 'Snouts' : 'Snout';
+      case CardKind.tit: return plural ? 'Tits' : 'Tit';
+      default: return plural ? '${k.name}s' : k.name;
+    }
   }
 
   @override
@@ -362,8 +382,9 @@ class _ActionButton extends StatelessWidget {
         }
         return PlayCardAction(cardId: selectedIds.first);
       case LegalActionKind.declareCompletion:
-        if (selectedIds.length != 6) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Pick exactly 6 cards (3+2+1) to declare.')));
+        final required = recipeCardCount(CompletionKind.bagino);
+        if (selectedIds.length != required) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Pick exactly $required cards to declare.')));
           return null;
         }
         // Heuristic: try bagino first, then bagina. Server validates.

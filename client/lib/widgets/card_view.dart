@@ -5,6 +5,30 @@ import '../theme/tokens.dart';
 import '../wire/wire.dart';
 import 'cute_motion.dart';
 
+/// Per-card visual metadata. One place to add an entry when a new CardKind
+/// is added to the Zod schema: the SVG filename, the gradient pair, and
+/// the user-facing label.
+class _CardArt {
+  const _CardArt({required this.svg, required this.label, required this.light, required this.deep});
+  final String svg;
+  final String label;
+  final Color light;
+  final Color deep;
+}
+
+const Map<CardKind, _CardArt> _kCardArt = {
+  CardKind.tooth: _CardArt(svg: 'card_tooth', label: 'Tooth', light: BaginaPalette.cream, deep: BaginaPalette.creamDeep),
+  CardKind.paw: _CardArt(svg: 'card_paw', label: 'Paw', light: BaginaPalette.mint, deep: BaginaPalette.mintDeep),
+  CardKind.snout: _CardArt(svg: 'card_snout', label: 'Snout', light: BaginaPalette.pink, deep: BaginaPalette.pinkDeep),
+  CardKind.tit: _CardArt(svg: 'card_tit', label: 'Tit', light: BaginaPalette.butter, deep: BaginaPalette.butterDeep),
+  CardKind.clever: _CardArt(svg: 'card_clever', label: 'Clever', light: BaginaPalette.lavender, deep: BaginaPalette.lavenderDeep),
+  CardKind.brave: _CardArt(svg: 'card_brave', label: 'Brave', light: BaginaPalette.pinkDeep, deep: BaginaPalette.win),
+  CardKind.business: _CardArt(svg: 'card_business', label: 'Business', light: BaginaPalette.pooGlow, deep: BaginaPalette.poo),
+  CardKind.rainyDay: _CardArt(svg: 'card_rainyday', label: 'Rainy Day', light: BaginaPalette.lavender, deep: BaginaPalette.mintDeep),
+  CardKind.marketDay: _CardArt(svg: 'card_marketday', label: 'Market', light: BaginaPalette.butter, deep: BaginaPalette.pinkDeep),
+  CardKind.wind: _CardArt(svg: 'card_wind', label: 'Wind', light: BaginaPalette.cream, deep: BaginaPalette.lavenderDeep),
+};
+
 /// A single playing card. Tappable for selection.
 class CardView extends StatelessWidget {
   const CardView({
@@ -20,7 +44,7 @@ class CardView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = _colorsFor(card.kind);
+    final art = _kCardArt[card.kind]!;
     return AnimatedScale(
       scale: selected ? 1.04 : 1.0,
       duration: BaginaDurations.fast,
@@ -32,7 +56,7 @@ class CardView extends StatelessWidget {
           height: 116,
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [colors.$1, colors.$2],
+              colors: [art.light, art.deep],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -43,7 +67,7 @@ class CardView extends StatelessWidget {
             ),
             boxShadow: [
               BoxShadow(
-                color: colors.$2.withValues(alpha: 0.4),
+                color: art.deep.withValues(alpha: 0.4),
                 blurRadius: selected ? 18 : 10,
                 offset: const Offset(0, 4),
               ),
@@ -53,10 +77,10 @@ class CardView extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _cardArt(card.kind, card.id),
+              CuteIcon(art.svg, size: 42, motion: CuteMotion.breathe, phaseSeed: card.id),
               const SizedBox(height: 4),
               Text(
-                _labelFor(card.kind),
+                art.label,
                 style: BaginaTypeScale.caption.copyWith(
                   color: Colors.white,
                   fontWeight: FontWeight.w900,
@@ -68,52 +92,5 @@ class CardView extends StatelessWidget {
         ),
       ),
     ).animate().fadeIn(duration: BaginaDurations.fast).scale(curve: Curves.easeOutBack, duration: BaginaDurations.bouncy);
-  }
-
-  (Color, Color) _colorsFor(CardKind k) {
-    switch (k) {
-      case CardKind.tooth: return (BaginaPalette.cream, BaginaPalette.creamDeep);
-      case CardKind.paw: return (BaginaPalette.mint, BaginaPalette.mintDeep);
-      case CardKind.snout: return (BaginaPalette.pink, BaginaPalette.pinkDeep);
-      case CardKind.tit: return (BaginaPalette.butter, BaginaPalette.butterDeep);
-      case CardKind.clever: return (BaginaPalette.lavender, BaginaPalette.lavenderDeep);
-      case CardKind.brave: return (BaginaPalette.pinkDeep, BaginaPalette.win);
-      case CardKind.business: return (BaginaPalette.pooGlow, BaginaPalette.poo);
-      case CardKind.rainyDay: return (BaginaPalette.lavender, BaginaPalette.mintDeep);
-      case CardKind.marketDay: return (BaginaPalette.butter, BaginaPalette.pinkDeep);
-      case CardKind.wind: return (BaginaPalette.cream, BaginaPalette.lavenderDeep);
-    }
-  }
-
-  // Each card kind maps to a custom SVG with its own gentle breathing motion.
-  Widget _cardArt(CardKind k, String phaseSeed) {
-    final svg = switch (k) {
-      CardKind.tooth => 'card_tooth',
-      CardKind.paw => 'card_paw',
-      CardKind.snout => 'card_snout',
-      CardKind.tit => 'card_tit',
-      CardKind.clever => 'card_clever',
-      CardKind.brave => 'card_brave',
-      CardKind.business => 'card_business',
-      CardKind.rainyDay => 'card_rainyday',
-      CardKind.marketDay => 'card_marketday',
-      CardKind.wind => 'card_wind',
-    };
-    return CuteIcon(svg, size: 42, motion: CuteMotion.breathe, phaseSeed: phaseSeed);
-  }
-
-  String _labelFor(CardKind k) {
-    switch (k) {
-      case CardKind.tooth: return 'Tooth';
-      case CardKind.paw: return 'Paw';
-      case CardKind.snout: return 'Snout';
-      case CardKind.tit: return 'Tit';
-      case CardKind.clever: return 'Clever';
-      case CardKind.brave: return 'Brave';
-      case CardKind.business: return 'Business';
-      case CardKind.rainyDay: return 'Rainy Day';
-      case CardKind.marketDay: return 'Market';
-      case CardKind.wind: return 'Wind';
-    }
   }
 }

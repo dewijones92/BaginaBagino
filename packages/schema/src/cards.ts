@@ -38,18 +38,7 @@ export type CompletionKind = z.infer<typeof CompletionKind>;
 export const PartialKind = z.enum(['brood', 'latch']);
 export type PartialKind = z.infer<typeof PartialKind>;
 
-/**
- * Static card metadata — the resource yield of each card. Imported by both
- * server engine and (via codegen) the Dart client for display.
- */
-export const ResourceYield = {
-  Tooth: { teeth: 5 },
-  Paw: { paws: 3 },
-  Snout: { snouts: 1 },
-  Tit: { tits: 6 },
-} as const;
-
-export const RECIPES = {
-  bagino: { teeth: 15, paws: 6, snouts: 1, tits: 0 },
-  bagina: { teeth: 10, paws: 9, snouts: 0, tits: 6 },
-} as const;
+// Card-count recipes for completions are defined in
+// packages/schema/data/balance.json and imported wherever needed.
+// The older yield-based `RECIPES` / `ResourceYield` constants are
+// intentionally not exported — they were dead code from an earlier design.

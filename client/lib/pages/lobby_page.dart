@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../state/game_state.dart';
+import '../theme/player_color_ext.dart';
 import '../theme/tokens.dart';
 import '../widgets/bouncy_button.dart';
 import '../wire/wire.dart';
@@ -160,7 +161,7 @@ class _PlayerTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = _color(p.color);
+    final color = p.color.swatch;
     return Container(
       margin: const EdgeInsets.only(top: 8),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -201,14 +202,5 @@ class _PlayerTile extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  Color _color(PlayerColor c) {
-    switch (c) {
-      case PlayerColor.pink: return BaginaPalette.pink;
-      case PlayerColor.mint: return BaginaPalette.mint;
-      case PlayerColor.lavender: return BaginaPalette.lavender;
-      case PlayerColor.butter: return BaginaPalette.butter;
-    }
   }
 }

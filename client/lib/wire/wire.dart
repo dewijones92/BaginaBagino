@@ -1,5 +1,5 @@
 // GENERATED FILE — do not edit by hand.
-// Source of truth: packages/schema/src/*.ts (Zod).
+// Source of truth: packages/schema/src/*.ts (Zod) + packages/schema/data/*.json.
 // Regenerate with: pnpm --filter @bagina/schema run gen
 // ignore_for_file: type=lint
 
@@ -1395,3 +1395,25 @@ final class ProtocolErrorEvent extends ServerEvent {
     'message': this.message,
   };
 }
+
+// -- Game balance constants (from packages/schema/data/balance.json)
+const Map<CompletionKind, Map<CardKind, int>> kRecipes = {
+  CompletionKind.bagino: {
+    CardKind.tooth: 3,
+    CardKind.paw: 2,
+    CardKind.snout: 1,
+  },
+  CompletionKind.bagina: {
+    CardKind.tooth: 2,
+    CardKind.paw: 3,
+    CardKind.tit: 1,
+  },
+};
+
+/// Total card count required for a completion declaration.
+int recipeCardCount(CompletionKind k) =>
+    kRecipes[k]!.values.fold(0, (a, b) => a + b);
+
+// -- Board layout constants (from packages/schema/data/board.json)
+const List<int> kPooSlots = [3, 7, 12, 16, 21, 25, 30, 34];
+const int kTotalSlots = 40;

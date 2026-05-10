@@ -9,5 +9,9 @@
   "startingPoo": 3,
   "movesPerPlayer": 40,
   "slotsPerDay": 8,
-  "days": 5
+  "days": 5,
+  "recipes": {
+    "bagino": { "Tooth": 3, "Paw": 2, "Snout": 1 },
+    "bagina": { "Tooth": 2, "Paw": 3, "Tit": 1 }
+  }
 }

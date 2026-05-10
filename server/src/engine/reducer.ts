@@ -509,10 +509,9 @@ function declareCompletion(
   const counts: Record<string, number> = {};
   for (const c of cards) counts[c.kind] = (counts[c.kind] ?? 0) + 1;
 
-  const requirements =
-    what === 'bagino'
-      ? { Tooth: 3, Paw: 2, Snout: 1 }
-      : { Tooth: 2, Paw: 3, Tit: 1 };
+  // Recipes live in @bagina/schema/data/balance.json so the Flutter client
+  // can read the same numbers via codegen. Don't hand-edit them here.
+  const requirements = balance.recipes[what] as Record<string, number>;
   for (const [k, n] of Object.entries(requirements)) {
     if ((counts[k] ?? 0) < n) {
       return { state, events: [emitError(state, `not enough ${k} for ${what}`)] };

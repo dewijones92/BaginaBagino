@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
+import '../theme/player_color_ext.dart';
 import '../theme/tokens.dart';
 import '../wire/wire.dart';
 
@@ -37,7 +38,7 @@ class BoardView extends StatelessWidget {
                     curve: Curves.elasticOut,
                     left: pos.dx - 18,
                     top: pos.dy - 18,
-                    child: _TokenDot(color: _color(p.color), pulsing: isActive, label: p.nickname),
+                    child: _TokenDot(color: p.color.deep, pulsing: isActive, label: p.nickname),
                   );
                 }),
               ],
@@ -46,15 +47,6 @@ class BoardView extends StatelessWidget {
         },
       ),
     );
-  }
-
-  static Color _color(PlayerColor c) {
-    switch (c) {
-      case PlayerColor.pink: return BaginaPalette.pinkDeep;
-      case PlayerColor.mint: return BaginaPalette.mintDeep;
-      case PlayerColor.lavender: return BaginaPalette.lavenderDeep;
-      case PlayerColor.butter: return BaginaPalette.butterDeep;
-    }
   }
 }
 
@@ -90,7 +82,7 @@ class _TokenDot extends StatelessWidget {
 }
 
 class _BoardPainter extends CustomPainter {
-  static const _slotCount = 40;
+  static const _slotCount = kTotalSlots;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -111,7 +103,7 @@ class _BoardPainter extends CustomPainter {
 
     for (var i = 0; i < _slotCount; i++) {
       final p = _slotPosition(i.toDouble(), ringRadius, centre);
-      final isPoo = _kPooSlots.contains(i);
+      final isPoo = kPooSlots.contains(i);
       final dotPaint = Paint()..color = isPoo ? BaginaPalette.poo : BaginaPalette.creamDeep;
       canvas.drawCircle(p, isPoo ? 9 : 6, dotPaint);
       if (isPoo) {
@@ -165,9 +157,6 @@ Offset _slotCenter(int slot, double size) {
 
 Offset _slotPosition(double slot, double radius, Offset centre) {
   // Start at 12 o'clock (-π/2), go clockwise.
-  final theta = -math.pi / 2 + (slot / 40) * math.pi * 2;
+  final theta = -math.pi / 2 + (slot / kTotalSlots) * math.pi * 2;
   return centre.translate(math.cos(theta) * radius, math.sin(theta) * radius);
 }
-
-// Mirrored from packages/schema/data/board.json — must stay in sync.
-const _kPooSlots = <int>{3, 7, 12, 16, 21, 25, 30, 34};

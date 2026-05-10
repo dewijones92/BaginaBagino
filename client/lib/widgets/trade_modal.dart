@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../theme/player_color_ext.dart';
 import '../theme/tokens.dart';
 import '../wire/wire.dart';
 import 'bouncy_button.dart';
@@ -204,12 +205,7 @@ class _PartnerChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = switch (player.color) {
-      PlayerColor.pink => BaginaPalette.pink,
-      PlayerColor.mint => BaginaPalette.mint,
-      PlayerColor.lavender => BaginaPalette.lavender,
-      PlayerColor.butter => BaginaPalette.butter,
-    };
+    final color = player.color.swatch;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(BaginaRadii.pill),
