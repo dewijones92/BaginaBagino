@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   build:
-    name: Build + release APK
+    name: Build + release signed APK
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -31,6 +31,14 @@ jobs:
         with:
           channel: stable
 
+      - name: Decode release keystore
+        env:
+          BAGINA_KEYSTORE_BASE64: ${{ secrets.BAGINA_KEYSTORE_BASE64 }}
+        run: |
+          mkdir -p .signing
+          printf '%s' "$BAGINA_KEYSTORE_BASE64" | base64 -d > .signing/bagina-release.jks
+          ls -la .signing
+
       - run: pnpm install --frozen-lockfile
       - run: pnpm gen
       - run: pnpm -r run test
@@ -41,25 +49,43 @@ jobs:
         run: flutter analyze
       - working-directory: client
         run: flutter test
-      - name: Build APK (split-per-abi)
+
+      - name: Build signed APKs
         working-directory: client
+        env:
+          BAGINA_KEYSTORE_PATH: ${{ github.workspace }}/.signing/bagina-release.jks
+          BAGINA_KEYSTORE_PASSWORD: ${{ secrets.BAGINA_KEYSTORE_PASSWORD }}
+          BAGINA_KEY_ALIAS: ${{ secrets.BAGINA_KEY_ALIAS }}
+          BAGINA_KEY_PASSWORD: ${{ secrets.BAGINA_KEY_PASSWORD }}
+        # build-number is the Android versionCode; using github.run_number
+        # gives a strictly increasing value so updates install over old
+        # builds without needing to uninstall.
         run: |
           flutter build apk --release --split-per-abi \
             --dart-define=SERVER_HOST=333133333.xyz \
             --dart-define=SERVER_PATH=/bagina \
-            --dart-define=SERVER_TLS=true
+            --dart-define=SERVER_TLS=true \
+            --build-number=${{ github.run_number }}
 
       - name: Compute version tag
         id: tag
         run: echo "tag=v$(date -u +%Y.%m.%d)-${GITHUB_RUN_NUMBER}" >> "$GITHUB_OUTPUT"
 
-      - name: Create release
+      - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.tag.outputs.tag }}
           name: Bagino Bagina ${{ steps.tag.outputs.tag }}
+          body: |
+            Auto-built APKs from commit ${{ github.sha }}.
+            Install over any previous version — same signing key.
+            Server: https://333133333.xyz/bagina/
           generate_release_notes: true
           files: |
             client/build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
             client/build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
             client/build/app/outputs/flutter-apk/app-x86_64-release.apk
+
+      - name: Cleanup keystore
+        if: always()
+        run: rm -f .signing/bagina-release.jks
