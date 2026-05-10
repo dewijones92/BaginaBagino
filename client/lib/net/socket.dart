@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 
 import '../wire/wire.dart';
@@ -20,26 +21,40 @@ class BaginaSocket {
 
   static BaginaSocket connect() {
     final url = ServerConfig.httpUrl();
+    final path = ServerConfig.socketPath();
+    debugPrint('[BaginaSocket] connecting to $url (path=$path)');
     final socket = io.io(
       url,
       io.OptionBuilder()
-          .setTransports(['websocket'])
-          .setPath(ServerConfig.socketPath())
+          .setTransports(['websocket', 'polling'])
+          .setPath(path)
           .enableReconnection()
           .setReconnectionDelay(800)
           .build(),
     );
     final s = BaginaSocket._(socket);
-    socket.on('connect', (_) => s._connected.add(true));
-    socket.on('disconnect', (_) => s._connected.add(false));
+    socket.on('connect', (_) {
+      debugPrint('[BaginaSocket] connected id=${socket.id}');
+      s._connected.add(true);
+    });
+    socket.on('disconnect', (reason) {
+      debugPrint('[BaginaSocket] disconnect: $reason');
+      s._connected.add(false);
+    });
+    socket.on('connect_error', (err) {
+      debugPrint('[BaginaSocket] connect_error: $err');
+    });
+    socket.on('error', (err) {
+      debugPrint('[BaginaSocket] error: $err');
+    });
     socket.on('event', (data) {
       try {
         if (data is Map) {
           final ev = ServerEvent.fromJson(Map<String, dynamic>.from(data));
           s._events.add(ev);
         }
-      } catch (_) {
-        // swallow malformed payloads — server is the source of truth
+      } catch (e) {
+        debugPrint('[BaginaSocket] bad event payload: $e');
       }
     });
     socket.connect();
