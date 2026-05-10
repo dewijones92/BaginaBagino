@@ -26,7 +26,9 @@ async function main(): Promise<void> {
 
   const io = new IOServer(app.server, {
     cors: { origin: true, credentials: true },
-    path: cfg.basePath === '/' ? '/socket.io/' : `${cfg.basePath.replace(/\/$/, '')}/socket.io/`,
+    // Server is mount-point agnostic. nginx strips any /bagina/ prefix
+    // before proxying, so socket.io always lives at /socket.io/ here.
+    path: '/socket.io/',
   });
   attachSocketHandlers(io, rooms, log);
 

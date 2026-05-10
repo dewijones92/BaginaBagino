@@ -1,0 +1,33 @@
+# docker-compose for the Pi. Run from /home/pi/code/BaginaBagino/infra/pi/.
+# The server joins the same default bridge so nginx_dewi can proxy to it
+# by container name (bagina-server:3001).
+
+services:
+  bagina-server:
+    container_name: bagina-server
+    image: bagina-server:local
+    build:
+      context: ../..
+      dockerfile: server/Dockerfile
+    restart: unless-stopped
+    environment:
+      PORT: 3001
+      DATA_DIR: /data
+      # nginx strips the /bagina/ prefix; server is mount-point agnostic.
+      BASE_PATH: /
+      LOG_LEVEL: info
+    volumes:
+      - bagina-data:/data
+    networks:
+      - default
+      - nginx_net
+
+volumes:
+  bagina-data:
+
+networks:
+  default:
+  # External network shared with nginx_dewi so it can reach us by name.
+  nginx_net:
+    external: true
+    name: bridge
