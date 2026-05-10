@@ -55,7 +55,8 @@ export function computeScores(state: GameStateInternal): PlayerScore[] {
 }
 
 export function pickWinners(scores: PlayerScore[]): string[] {
-  if (scores.length === 0) return [];
+  // Empty input naturally yields []: Math.max(...[]) is -Infinity,
+  // and filter over [] returns []. No explicit guard needed.
   const max = Math.max(...scores.map((s) => s.total));
   return scores.filter((s) => s.total === max).map((s) => s.playerId);
 }

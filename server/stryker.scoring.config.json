@@ -1,0 +1,26 @@
+{
+  "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
+  "_comment": "Stryker config for the focused mutation:scoring run. Uses the dedicated vitest config that only loads tests/engine/scoring.test.ts, so each mutant runs ~30 tiny unit tests instead of ~80 full-game replays.",
+  "packageManager": "pnpm",
+  "testRunner": "vitest",
+  "plugins": ["@stryker-mutator/vitest-runner"],
+  "vitest": {
+    "configFile": "vitest.scoring.config.ts"
+  },
+  "coverageAnalysis": "perTest",
+  "mutate": ["src/engine/scoring.ts"],
+  "ignorePatterns": ["dist", "coverage", "reports"],
+  "checkers": [],
+  "concurrency": 4,
+  "timeoutMS": 10000,
+  "thresholds": {
+    "high": 85,
+    "low": 70,
+    "break": null
+  },
+  "reporters": ["progress", "html", "clear-text"],
+  "htmlReporter": {
+    "fileName": "reports/mutation-scoring/index.html"
+  },
+  "tempDirName": ".stryker-tmp"
+}

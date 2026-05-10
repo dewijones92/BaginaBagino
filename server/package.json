@@ -15,7 +15,7 @@
     "lint": "tsc --noEmit -p tsconfig.json",
     "playtest": "tsx tests/e2e/playtest.ts",
     "mutation": "stryker run",
-    "mutation:scoring": "stryker run --mutate src/engine/scoring.ts",
+    "mutation:scoring": "stryker run stryker.scoring.config.json",
     "mutation:reducer": "stryker run --mutate src/engine/reducer.ts"
   },
   "dependencies": {
