@@ -53,16 +53,12 @@ describe('engine properties', () => {
     }
   });
 
-  it.each([100, 200])('seed %i: every card is somewhere (deck + discard + hands + consumed = deckSize)', (seed) => {
+  it.each([100, 200])('seed %i: every card is somewhere (deck + discard + hands = deckSize)', (seed) => {
     const s = runRandomGame(seed, 4);
     const handTotal = s.players.reduce((acc, p) => acc + p.hand.length, 0);
-    // Each completion consumes 6 cards (3+2+1 or 2+3+1) — they aren't in
-    // hand or discard afterward.
-    const consumed = s.players.reduce(
-      (acc, p) => acc + p.completed.length * 6,
-      0,
-    );
-    expect(s.deck.length + s.discard.length + handTotal + consumed).toBe(deckSize());
+    // Completed-set cards stay in discard (engine doesn't delete them),
+    // so they're already counted in s.discard.length.
+    expect(s.deck.length + s.discard.length + handTotal).toBe(deckSize());
   });
 
   it.each([5, 6])('seed %i: never advances past 4 × movesPerPlayer total moves', (seed) => {
