@@ -15,7 +15,12 @@ async function main(): Promise<void> {
   const persistence = new Persistence(`${cfg.dataDir}/rooms.sqlite`);
   const rooms = new RoomManager(persistence);
 
-  const app = Fastify({ logger: log });
+  const app = Fastify({
+    logger: {
+      level: cfg.logLevel,
+      transport: { target: 'pino-pretty' },
+    },
+  });
   await app.register(cors, { origin: true });
   attachHttpRoutes(app);
 

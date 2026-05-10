@@ -12,8 +12,8 @@ import 'package:bagina/wire/wire.dart';
 class _FakeSocket implements BaginaSocket {
   final _events = StreamController<ServerEvent>.broadcast();
   final _conn = StreamController<bool>.broadcast();
-  bool _connected = false;
-  String? _id = 'fake-socket-id';
+  final bool _connected = false;
+  final String _id = 'fake-socket-id';
   final List<GameAction> sent = [];
 
   @override

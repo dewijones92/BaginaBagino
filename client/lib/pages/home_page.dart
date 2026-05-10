@@ -20,23 +20,6 @@ class _HomePageState extends ConsumerState<HomePage> {
   final _code = TextEditingController(text: '');
   bool _busy = false;
 
-  ProviderSubscription<GameStateSnapshot?>? _sub;
-
-  @override
-  void initState() {
-    super.initState();
-    _sub = ref.listenManual<GameStateSnapshot?>(gameStateProvider, (prev, next) {
-      if (next != null && next.code.isNotEmpty && mounted) {
-        context.go('/lobby/${next.code}');
-      }
-    });
-  }
-
-  @override
-  void deactivate() {
-    _sub?.close();
-    super.deactivate();
-  }
 
   @override
   void dispose() {
@@ -77,6 +60,11 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<GameStateSnapshot?>(gameStateProvider, (prev, next) {
+      if (next != null && next.code.isNotEmpty && mounted) {
+        context.go('/lobby/${next.code}');
+      }
+    });
     return Scaffold(
       body: SafeArea(
         child: Center(

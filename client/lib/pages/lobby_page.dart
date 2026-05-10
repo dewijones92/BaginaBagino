@@ -18,12 +18,9 @@ class LobbyPage extends ConsumerStatefulWidget {
 }
 
 class _LobbyPageState extends ConsumerState<LobbyPage> {
-  ProviderSubscription<GameStateSnapshot?>? _sub;
-
   @override
-  void initState() {
-    super.initState();
-    _sub = ref.listenManual<GameStateSnapshot?>(gameStateProvider, (prev, next) {
+  Widget build(BuildContext context) {
+    ref.listen<GameStateSnapshot?>(gameStateProvider, (prev, next) {
       if (!mounted) return;
       if (next == null) {
         context.go('/');
@@ -33,16 +30,6 @@ class _LobbyPageState extends ConsumerState<LobbyPage> {
         context.go('/board');
       }
     });
-  }
-
-  @override
-  void deactivate() {
-    _sub?.close();
-    super.deactivate();
-  }
-
-  @override
-  Widget build(BuildContext context) {
     final state = ref.watch(gameStateProvider);
     if (state == null) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
