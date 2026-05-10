@@ -57,7 +57,7 @@ For end-to-end gates, `scripts/playtest.sh` plays a deterministic full game agai
 
 ## WSL2 notes
 
-- The AVD for this project is **`bagino`** (separate from `antennapod`). Use `scripts/run-emulator.sh` to launch it headless with `swiftshader_indirect` rendering — `host` GPU is flaky over WSLg.
+- The AVD for this project is **`baginoapp-dewi`** — separate from any other agent's AVD on this machine. The `-dewi` suffix is the ownership tag. Use `scripts/run-emulator.sh` to launch it headless with `swiftshader_indirect` rendering — `host` GPU is flaky over WSLg.
 - Inside the emulator, the WSL2 host is reachable at **`10.0.2.2`**, not `localhost`. The dev script handles this via `--dart-define`.
 - KVM is available (`/dev/kvm`, `kvm` group). Don't try Hyper-V tools alongside.
 

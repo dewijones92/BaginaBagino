@@ -4,4 +4,5 @@ packages:
 
 # pnpm 11 needs explicit approval for native build scripts.
 allowBuilds:
+  better-sqlite3: true
   esbuild: true

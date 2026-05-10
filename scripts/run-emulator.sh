@@ -10,7 +10,7 @@ set -euo pipefail
 ANDROID_SDK="${ANDROID_SDK:-/home/dewi/code/android-sdk}"
 EMULATOR="$ANDROID_SDK/emulator/emulator"
 ADB="$ANDROID_SDK/platform-tools/adb"
-AVD_NAME="${AVD_NAME:-bagino}"
+AVD_NAME="${AVD_NAME:-baginoapp-dewi}"
 EMU_PORT="${BAGINA_EMU_PORT:-5582}"
 DEVICE_ID="emulator-$EMU_PORT"
 PID_FILE="${BAGINA_PID_FILE:-/tmp/bagina-emulator.pid}"

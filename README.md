@@ -24,7 +24,7 @@ cd client && flutter run -d chrome --dart-define=SERVER_HOST=localhost
 To play on the headless Android emulator:
 
 ```bash
-scripts/run-emulator.sh                  # boots the bagino AVD
+scripts/run-emulator.sh                  # boots the baginoapp-dewi AVD
 cd client && flutter run --dart-define=SERVER_HOST=10.0.2.2
 ```
 

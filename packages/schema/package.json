@@ -4,15 +4,13 @@
   "private": true,
   "description": "Bagino Bagina wire-schema source of truth (Zod) + Dart codegen pipeline",
   "type": "module",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    },
+    ".": "./src/index.ts",
     "./data/balance.json": "./data/balance.json",
     "./data/board.json": "./data/board.json",
+    "./data/deck.json": "./data/deck.json",
     "./data/homework.json": "./data/homework.json"
   },
   "scripts": {
