@@ -1,0 +1,31 @@
+name: Schema drift check
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  drift:
+    name: pnpm gen leaves clean diff
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm gen
+      - name: Fail if generated files are stale
+        run: |
+          if ! git diff --exit-code packages/schema/dist client/lib/wire client/lib/theme; then
+            echo "::error::Generated files are stale. Run 'pnpm gen' locally and commit the result."
+            exit 1
+          fi
