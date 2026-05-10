@@ -2,6 +2,10 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
+    // Keep Stryker's sandbox out of normal test discovery. Stryker copies the
+    // tests/ tree into .stryker-tmp/sandbox-*/ and if a previous run leaves
+    // those behind, vitest will happily pick them up and double-count.
+    exclude: ['**/node_modules/**', '**/dist/**', '**/.stryker-tmp/**'],
     coverage: {
       // V8 provider — fast, no instrumentation overhead.
       provider: 'v8',

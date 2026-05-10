@@ -43,6 +43,8 @@ packages/theme/dist/
 server/data/
 server/dist/
 server/coverage/
+server/reports/
+server/.stryker-tmp/
 
 # OS
 .DS_Store

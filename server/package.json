@@ -13,7 +13,10 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "lint": "tsc --noEmit -p tsconfig.json",
-    "playtest": "tsx tests/e2e/playtest.ts"
+    "playtest": "tsx tests/e2e/playtest.ts",
+    "mutation": "stryker run",
+    "mutation:scoring": "stryker run --mutate src/engine/scoring.ts",
+    "mutation:reducer": "stryker run --mutate src/engine/reducer.ts"
   },
   "dependencies": {
     "@bagina/schema": "workspace:*",
@@ -26,6 +29,8 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@stryker-mutator/core": "^9.6.1",
+    "@stryker-mutator/vitest-runner": "^9.6.1",
     "@types/better-sqlite3": "^7.6.12",
     "@types/node": "^22.10.5",
     "@vitest/coverage-v8": "^2.1.9",

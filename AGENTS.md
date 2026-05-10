@@ -7,5 +7,6 @@ Start here. Then read these in order:
 - [docs/PROTOCOL.md](./docs/PROTOCOL.md) — wire actions and events
 - [docs/BALANCE.md](./docs/BALANCE.md) — deck math, scoring, homework difficulty
 - [docs/DEPLOY.md](./docs/DEPLOY.md) — Pi deploy flow
+- [docs/MUTATION-TESTING.md](./docs/MUTATION-TESTING.md) — how the StrykerJS workflow works
 
 If anything in the docs contradicts CLAUDE.md, CLAUDE.md wins.
