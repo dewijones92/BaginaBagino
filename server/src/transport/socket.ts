@@ -61,6 +61,8 @@ function handleAction(
       if (created) socket.emit('event', created);
       socket.emit('event', initialJoinedEvent(state, ctx.playerId));
       broadcastTo(io, code, events.filter((e) => e.kind !== 'RoomCreated' && e.kind !== 'RoomJoined'));
+      // Snapshot for the creator so legalActions / privateView are populated.
+      if (rooms.get(code as any)) emitSnapshots(io, rooms.get(code as any)!);
       return;
     }
     case 'JoinRoom': {
@@ -73,6 +75,9 @@ function handleAction(
       socket.join(action.code);
       socket.emit('event', initialJoinedEvent(state, ctx.playerId));
       broadcastTo(io, action.code, events);
+      // Refresh every player's snapshot so the host's lobby tile updates.
+      const fresh = rooms.get(action.code as any);
+      if (fresh) emitSnapshots(io, fresh);
       return;
     }
     case 'LeaveRoom': {
@@ -80,6 +85,9 @@ function handleAction(
       const evs = rooms.leaveRoom(ctx.roomCode as any, ctx.playerId);
       broadcastTo(io, ctx.roomCode, evs);
       socket.leave(ctx.roomCode);
+      // Refresh remaining players too.
+      const fresh = rooms.get(ctx.roomCode as any);
+      if (fresh) emitSnapshots(io, fresh);
       ctx.roomCode = null;
       return;
     }
