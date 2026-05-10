@@ -85,21 +85,6 @@ class CardView extends StatelessWidget {
     }
   }
 
-  String _emojiFor(CardKind k) {
-    switch (k) {
-      case CardKind.tooth: return '🦷';
-      case CardKind.paw: return '🐾';
-      case CardKind.snout: return '🐽';
-      case CardKind.tit: return '🐦';
-      case CardKind.clever: return '🧠';
-      case CardKind.brave: return '🦁';
-      case CardKind.business: return '💼';
-      case CardKind.rainyDay: return '🌧️';
-      case CardKind.marketDay: return '🛒';
-      case CardKind.wind: return '🌬️';
-    }
-  }
-
   // Each card kind maps to a custom SVG with its own gentle breathing motion.
   Widget _cardArt(CardKind k, String phaseSeed) {
     final svg = switch (k) {

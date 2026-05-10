@@ -65,10 +65,17 @@ class GameStateNotifier extends StateNotifier<GameStateSnapshot?> {
   GameEndedEvent? _lastEnded;
   HomeworkRevealedEvent? _lastHomeworkReveal;
 
+  /// Trade offers currently addressed to me, indexed by tradeId. Cleared as
+  /// soon as TradeResolved fires for that tradeId.
+  final Map<String, TradeOffer> _incomingTrades = {};
+  final List<TradeOffer> _outgoingTrades = [];
+
   String? get currentRoomCode => state?.code;
   String? get youId => _youId;
   GameEndedEvent? get lastEnded => _lastEnded;
   HomeworkRevealedEvent? get lastHomeworkReveal => _lastHomeworkReveal;
+  List<TradeOffer> get incomingTrades => _incomingTrades.values.toList(growable: false);
+  List<TradeOffer> get outgoingTrades => List.unmodifiable(_outgoingTrades);
 
   void _onEvent(ServerEvent event) {
     switch (event) {
@@ -92,6 +99,21 @@ class GameStateNotifier extends StateNotifier<GameStateSnapshot?> {
         break;
       case HomeworkRevealedEvent():
         _lastHomeworkReveal = event;
+        break;
+      case TradeOfferedEvent():
+        if (event.offer.to == _youId) {
+          _incomingTrades[event.offer.tradeId] = event.offer;
+        }
+        if (event.offer.from == _youId) {
+          _outgoingTrades.add(event.offer);
+        }
+        // Bump state so listening widgets rebuild.
+        if (state != null) state = state!._touched();
+        break;
+      case TradeResolvedEvent():
+        _incomingTrades.remove(event.tradeId);
+        _outgoingTrades.removeWhere((t) => t.tradeId == event.tradeId);
+        if (state != null) state = state!._touched();
         break;
       case PlayerLeftEvent() when state?.activePlayerId == event.playerId:
         // Nothing to do — server will send a fresh snapshot.
@@ -145,6 +167,21 @@ extension on GameStateSnapshot {
       youId: youId,
     );
   }
+
+  /// Identity copy — used to force a rebuild after side-state (trades) changes.
+  GameStateSnapshot _touched() => GameStateSnapshot(
+    code: code,
+    phase: phase,
+    players: players,
+    activePlayerId: activePlayerId,
+    turnsRemaining: turnsRemaining,
+    deckRemaining: deckRemaining,
+    hand: hand,
+    homeworkHints: homeworkHints,
+    homeworkRevealed: homeworkRevealed,
+    legalActions: legalActions,
+    youId: youId,
+  );
 }
 
 final gameStateProvider = StateNotifierProvider<GameStateNotifier, GameStateSnapshot?>((ref) {

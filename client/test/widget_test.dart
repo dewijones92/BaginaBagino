@@ -45,7 +45,10 @@ void main() {
         ),
       ),
     );
-    await tester.pumpAndSettle(const Duration(seconds: 2));
+    // Animate widgets keep a ticker alive — pumpAndSettle would never
+    // return. Pump fixed durations to let one-shot fades/scales play out.
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 800));
 
     expect(find.text('Bagino Bagina'), findsOneWidget);
     expect(find.text('Start a new room'), findsOneWidget);
@@ -69,7 +72,8 @@ void main() {
     await tester.pump();
 
     await tester.tap(find.text('Create room'));
-    await tester.pumpAndSettle(const Duration(seconds: 2));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 800));
 
     expect(find.text('Need a nickname, you gormless soul.'), findsOneWidget);
     expect(fake.sent, isEmpty);

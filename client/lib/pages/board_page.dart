@@ -8,6 +8,8 @@ import '../theme/tokens.dart';
 import '../widgets/board_view.dart';
 import '../widgets/bouncy_button.dart';
 import '../widgets/card_view.dart';
+import '../widgets/incoming_trade_banner.dart';
+import '../widgets/trade_modal.dart';
 import '../wire/wire.dart';
 
 class BoardPage extends ConsumerStatefulWidget {
@@ -27,6 +29,62 @@ class _BoardPageState extends ConsumerState<BoardPage> {
         _selected.add(cardId);
       }
     });
+  }
+
+  /// Build incoming-trade banners by reading the notifier's side-state.
+  /// Returns a list of widgets to splice into the column. Returns [] when
+  /// there's nothing to surface.
+  List<Widget> _buildIncomingTrades(WidgetRef ref, GameStateSnapshot state) {
+    final notifier = ref.read(gameStateProvider.notifier);
+    final offers = notifier.incomingTrades;
+    if (offers.isEmpty) return const [];
+    final socket = ref.read(socketProvider);
+    return offers.map((offer) {
+      final fromNick = state.players.firstWhere(
+        (p) => p.id == offer.from,
+        orElse: () => state.players.first,
+      ).nickname;
+      // Translate giveCardIds to kinds for display. The offerer holds those
+      // cards; we don't have them in OUR hand, so look them up by their
+      // suffix in id (id format: "c{n}-{Kind}"). Defensive fallback to '?'.
+      final kinds = offer.giveCardIds.map((id) {
+        final dash = id.lastIndexOf('-');
+        return dash >= 0 ? id.substring(dash + 1) : '?';
+      }).toList();
+      return IncomingTradeBanner(
+        offer: offer,
+        fromNickname: fromNick,
+        cardKindsGive: kinds,
+        onAccept: () => socket.send(RespondTradeAction(tradeId: offer.tradeId, accept: true)),
+        onReject: () => socket.send(RespondTradeAction(tradeId: offer.tradeId, accept: false)),
+      );
+    }).toList();
+  }
+
+  Future<void> _openTradeModal(BuildContext context, GameStateSnapshot state, WidgetRef ref) async {
+    final me = state.me;
+    if (me == null) return;
+    final socket = ref.read(socketProvider);
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetCtx) => TradeModal(
+        you: state.youId,
+        otherPlayers: state.players.where((p) => p.id != state.youId).toList(),
+        myHand: state.hand,
+        myPoo: me.poo,
+        onSubmit: ({required to, required giveCardIds, required givePoo, required requestPoo}) {
+          socket.send(OfferTradeAction(
+            to: to,
+            giveCardIds: giveCardIds,
+            givePoo: givePoo,
+            requestCardIds: const [],
+            requestPoo: requestPoo,
+          ));
+        },
+      ),
+    );
   }
 
   // Show the player how close they are to a Bagino (3 Tooth + 2 Paw + 1 Snout)
@@ -125,17 +183,18 @@ class _BoardPageState extends ConsumerState<BoardPage> {
                               },
                             ),
                     ),
+                    // Incoming-trade banner(s): surface above the action wall
+                    // so they're impossible to miss when it's your move.
+                    ..._buildIncomingTrades(ref, state),
                     const SizedBox(height: 16),
                     Text('Actions', style: BaginaTypeScale.title),
                     const SizedBox(height: 8),
                     Builder(builder: (context) {
-                      // Trades aren't wired in the UI yet, so don't render
-                      // their buttons. The server still accepts the actions
-                      // for clients that learn the protocol.
+                      // RespondTrade has its own banner UI above — don't
+                      // surface it as a button. OfferTrade has a dedicated
+                      // handler that opens the modal.
                       final wired = state.legalActions
-                          .where((a) =>
-                              a != LegalActionKind.offerTrade &&
-                              a != LegalActionKind.respondTrade)
+                          .where((a) => a != LegalActionKind.respondTrade)
                           .toList();
                       if (wired.isEmpty) {
                         return Padding(
@@ -157,6 +216,7 @@ class _BoardPageState extends ConsumerState<BoardPage> {
                                   selectedIds: _selected,
                                   onSent: () => setState(_selected.clear),
                                   onSend: socket.send,
+                                  onOpenTradeModal: () => _openTradeModal(context, state, ref),
                                 ))
                             .toList(),
                       );
@@ -258,11 +318,13 @@ class _ActionButton extends StatelessWidget {
     required this.selectedIds,
     required this.onSent,
     required this.onSend,
+    required this.onOpenTradeModal,
   });
   final LegalActionKind action;
   final Set<String> selectedIds;
   final VoidCallback onSent;
   final void Function(GameAction) onSend;
+  final VoidCallback onOpenTradeModal;
 
   @override
   Widget build(BuildContext context) {
@@ -272,9 +334,16 @@ class _ActionButton extends StatelessWidget {
       icon: icon,
       color: color,
       onPressed: () {
-        final action = _toAction(context);
-        if (action != null) {
-          onSend(action);
+        // OfferTrade is special: opens a modal rather than emitting a fully-
+        // formed action straight away. Everything else round-trips through
+        // _toAction and sends immediately.
+        if (action == LegalActionKind.offerTrade) {
+          onOpenTradeModal();
+          return;
+        }
+        final action_ = _toAction(context);
+        if (action_ != null) {
+          onSend(action_);
           onSent();
         }
       },
@@ -300,8 +369,10 @@ class _ActionButton extends StatelessWidget {
         // Heuristic: try bagino first, then bagina. Server validates.
         return DeclareCompletionAction(what: CompletionKind.bagino, cardIds: selectedIds.toList());
       case LegalActionKind.offerTrade:
+        // Handled in build() via onOpenTradeModal.
+        return null;
       case LegalActionKind.respondTrade:
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Trades coming in v1.1, hold tight.')));
+        // Handled via the IncomingTradeBanner — should not appear as a button.
         return null;
     }
   }

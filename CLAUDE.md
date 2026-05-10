@@ -66,21 +66,44 @@ scripts/dev-public-tunnel.sh up    # expose this laptop's :8888 + :3001 at https
   - Both `/bagina-dev/socket.io/` (port 3001) and the Flutter web bundle (port 8888) are forwarded. Edit code locally, refresh the public tab.
   - Backed by an nft INPUT-chain allow rule on the Pi (`bagina-dev-firewall.service`) and an nginx partial in `dot-files`.
 
+## DRY across frontend, backend, and the schema
+
+Aggressive DRY across all stacks. This is a project rule, not a suggestion.
+
+- `packages/schema/src/` is the **only** place wire shapes are defined (Zod). `pnpm gen` codegens Dart sealed classes from it into `client/lib/wire/wire.dart`. **Never** hand-edit the generated Dart.
+- `packages/theme/tokens.yaml` is the **only** place visual tokens (palette, radii, spring physics, type scale) live. Codegens to Dart `tokens.dart` and TS `tokens.ts`.
+- Constants (balance numbers, deck composition, board layout, homework templates) live in `packages/schema/data/*.json` and are imported by both sides via the schema package. **No magic numbers** in either tree.
+- Rules engine and reducers live **only** on the server in `server/src/engine/`. The Flutter client is presentation-only — it dispatches `GameAction`s and renders `StateSnapshot`s. To grey out a button, read `state.legalActions` (server-pushed) — never re-derive legality client-side.
+- If you write the same logic twice (once in TS, once in Dart), stop. Move it to the server (preferred for rules) or shared schema (for constants).
+- New constants added on one side without the other getting it via codegen = DRY violation. Push back.
+
 ## Testing posture — rock-solid coverage, no exceptions
 
-Every change ships with proof. This is a project rule, not a suggestion.
+Every change ships with proof. This is a project rule, not a suggestion. The suite must cover **both frontend and backend logic**, and it must run **fast**.
 
 - **Bug fixes start with a failing regression test.** Reproduce the bug as a vitest, watch it fail, then fix the code, watch it pass. If you can't write the regression test, you don't understand the bug yet.
 - **New behaviour ships with happy-path + error-path tests.** Every guard you write (`if (!active) return error`) needs a test that exercises the rejection.
-- **Engine reducer changes** (`server/src/engine/*`) get focused unit tests in `server/tests/engine/`. Use property tests in `property.test.ts` for invariants (deck conservation, score non-negativity, termination). Keep the engine suite under 3s total.
+- **Engine reducer changes** (`server/src/engine/*`) get focused unit tests in `server/tests/engine/`. Use property tests in `property.test.ts` for invariants (deck conservation, score non-negativity, termination).
 - **Schema changes** are exercised by `pnpm gen` — CI gates a clean `git diff` after regen.
-- **UI changes** ship with at least one widget or golden test. Keep them fast — no full-app launches per test.
+- **UI changes** ship with at least one widget or golden test for every interactive component. Use fixed-duration `pump()` in Flutter widget tests when Animate widgets are present — `pumpAndSettle()` never returns because Animate keeps a ticker alive.
+- **Both ends covered, every feature.** A new feature that lacks both a server-engine test AND a client-widget test means the suite is unbalanced — add the missing half before shipping.
+- **Speed budget**: server suite under 3s, client suite under 5s, total CI cycle under 30s. If a single file exceeds 1s, justify it in the PR.
+- **No tests that depend on the real Pi or network.** e2e tests use in-process server + socket.io clients. The Pi is a manual deploy gate, not a CI gate.
 - **If a regression slipped through, write the test that would have caught it _before_ landing the fix.** Otherwise you're paying for the bug twice.
 - **Don't pad coverage.** Each test pins a behaviour worth defending, not a line of code worth counting.
 
-The engine has property tests — adding a new card or scoring rule means adding a property that proves it terminates and is non-negative. Visual changes ship with at least one golden test.
-
 For end-to-end gates, `scripts/playtest.sh` plays a deterministic full game against the live server. If a server change breaks it, fix the server, not the test.
+
+## Mutation testing — proving test STRENGTH, not just coverage
+
+Coverage tells us code was executed. Mutation testing tells us tests would actually catch a regression. We want both.
+
+- **Tool**: [StrykerJS](https://stryker-mutator.io/) (`@stryker-mutator/core` + `@stryker-mutator/vitest-runner`) for the TypeScript server engine. Dart mutation tooling is too immature — skip the client side for now and lean on widget + golden tests instead.
+- **Where it matters most**: `server/src/engine/reducer.ts` (action dispatcher), `server/src/engine/scoring.ts` (arithmetic — easy to flip `<` to `<=`), `server/src/engine/actions.ts` (legal-action computation). These are the highest-value targets. Skip schema files (mutants there mostly turn into compile errors).
+- **Stay fast**: target **<2 min for the engine alone**. Use `--mutate` to scope to one module, `--coverageAnalysis perTest` (only reruns the tests that touched the mutated code), `--concurrency` to parallelise.
+- **Don't run on every PR**: too slow. Run nightly via `workflow_dispatch` or on major engine changes.
+- **Bar**: aim for **>=80% mutation score in the engine**. Each surviving mutant in the engine is a real regression class production is blind to. If the bar is missed, write tighter tests — don't delete the mutant.
+- **Ignore "Equivalent" mutants** (compiler-level identity transforms; they're noise).
 
 ## WSL2 notes
 
