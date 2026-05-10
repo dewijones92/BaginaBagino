@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <!-- A friendly little basket of goodies -->
+  <!-- Basket body -->
+  <path d="M 22 56 L 26 100 L 94 100 L 98 56 Z" fill="#D88243" stroke="#3A1F2A" stroke-width="3.5" stroke-linejoin="round"/>
+  <!-- Weave pattern -->
+  <path d="M 30 64 L 90 64 M 30 76 L 90 76 M 30 88 L 90 88" stroke="#3A1F2A" stroke-width="1.5" opacity="0.4"/>
+  <path d="M 40 56 L 40 100 M 60 56 L 60 100 M 80 56 L 80 100" stroke="#3A1F2A" stroke-width="1.5" opacity="0.4"/>
+  <!-- Handle -->
+  <path d="M 36 56 Q 36 24 60 24 Q 84 24 84 56" fill="none" stroke="#7B4B26" stroke-width="6" stroke-linecap="round"/>
+  <!-- Apple peeking out -->
+  <circle cx="44" cy="50" r="9" fill="#FFD0DD" stroke="#3A1F2A" stroke-width="2.5"/>
+  <path d="M 44 41 L 46 36 Q 50 36 50 40" fill="none" stroke="#3A1F2A" stroke-width="2"/>
+  <!-- Bread loaf -->
+  <ellipse cx="72" cy="52" rx="14" ry="8" fill="#FFE48A" stroke="#3A1F2A" stroke-width="2.5"/>
+  <path d="M 64 50 Q 68 46 72 50 M 70 50 Q 74 46 78 50" stroke="#3A1F2A" stroke-width="1.5" fill="none"/>
+</svg>

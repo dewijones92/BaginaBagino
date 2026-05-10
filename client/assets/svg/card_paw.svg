@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <!-- Cute paw print, blue (matches existing card) -->
+  <ellipse cx="60" cy="74" rx="22" ry="18" fill="#5B8FE0" stroke="#2C4A82" stroke-width="3"/>
+  <ellipse cx="34" cy="46" rx="9" ry="12" fill="#5B8FE0" stroke="#2C4A82" stroke-width="3"/>
+  <ellipse cx="50" cy="32" rx="9" ry="12" fill="#5B8FE0" stroke="#2C4A82" stroke-width="3"/>
+  <ellipse cx="70" cy="32" rx="9" ry="12" fill="#5B8FE0" stroke="#2C4A82" stroke-width="3"/>
+  <ellipse cx="86" cy="46" rx="9" ry="12" fill="#5B8FE0" stroke="#2C4A82" stroke-width="3"/>
+  <!-- Highlight on main pad -->
+  <ellipse cx="54" cy="68" rx="5" ry="3" fill="#A6C4F0" opacity="0.8"/>
+</svg>

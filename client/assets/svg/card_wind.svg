@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <!-- Cute wind face puffing -->
+  <!-- Cloud face -->
+  <ellipse cx="44" cy="58" rx="34" ry="26" fill="#E8F0FA" stroke="#3A1F2A" stroke-width="3.5"/>
+  <!-- Cheeks puffed -->
+  <circle cx="28" cy="64" r="8" fill="#FFD0DD"/>
+  <circle cx="64" cy="64" r="8" fill="#FFD0DD"/>
+  <!-- Eyes -->
+  <circle cx="30" cy="50" r="3" fill="#3A1F2A"/>
+  <circle cx="58" cy="50" r="3" fill="#3A1F2A"/>
+  <!-- Tiny round mouth blowing -->
+  <ellipse cx="74" cy="62" rx="5" ry="6" fill="#3A1F2A"/>
+  <!-- Wind swirls -->
+  <path d="M 84 56 Q 100 50 108 58 Q 100 66 92 60" fill="none" stroke="#A8C5E8" stroke-width="4" stroke-linecap="round"/>
+  <path d="M 86 72 Q 102 68 110 76" fill="none" stroke="#A8C5E8" stroke-width="4" stroke-linecap="round"/>
+  <path d="M 82 88 Q 96 86 104 92" fill="none" stroke="#A8C5E8" stroke-width="4" stroke-linecap="round"/>
+</svg>

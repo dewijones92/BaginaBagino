@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../state/game_state.dart';
 import '../theme/tokens.dart';
 import '../widgets/bouncy_button.dart';
+import '../widgets/cute_motion.dart';
 import '../wire/wire.dart';
 
 class HomePage extends ConsumerStatefulWidget {
@@ -76,7 +77,16 @@ class _HomePageState extends ConsumerState<HomePage> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 16),
+                  Center(
+                    child: CuteIcon(
+                      'piggy',
+                      size: 132,
+                      motion: CuteMotion.bobble,
+                      semanticLabel: 'Bagino Bagina piggy',
+                    ),
+                  ),
+                  const SizedBox(height: 8),
                   _Title()
                       .animate()
                       .fadeIn(duration: BaginaDurations.medium)

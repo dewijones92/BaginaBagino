@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <!-- A tit (the bird), goofy and round. Yellow belly, blue cap. -->
+  <!-- Body -->
+  <ellipse cx="62" cy="68" rx="34" ry="30" fill="#FFE48A" stroke="#3A1F2A" stroke-width="3"/>
+  <!-- Head/cap -->
+  <path d="M 30 56 Q 30 30 62 28 Q 92 30 92 56 Q 92 60 88 62 Q 60 50 32 62 Q 30 60 30 56 Z"
+        fill="#5B8FE0" stroke="#3A1F2A" stroke-width="3" stroke-linejoin="round"/>
+  <!-- Wing -->
+  <path d="M 76 60 Q 96 70 86 88 Q 78 84 74 76 Z" fill="#A8C5E8" stroke="#3A1F2A" stroke-width="2"/>
+  <!-- Eye -->
+  <circle cx="48" cy="50" r="4" fill="#FFFFFF"/>
+  <circle cx="48" cy="50" r="2.5" fill="#3A1F2A"/>
+  <!-- Beak -->
+  <path d="M 30 56 L 18 58 L 30 62 Z" fill="#E89B43" stroke="#3A1F2A" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Feet hint -->
+  <path d="M 52 96 L 52 102 M 56 96 L 58 102 M 70 96 L 70 102 M 74 96 L 76 102"
+        stroke="#E89B43" stroke-width="2.5" stroke-linecap="round"/>
+</svg>

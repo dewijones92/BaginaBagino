@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 
 import '../theme/tokens.dart';
 import '../wire/wire.dart';
+import 'cute_motion.dart';
 
 /// A single playing card. Tappable for selection.
 class CardView extends StatelessWidget {
@@ -52,10 +53,7 @@ class CardView extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                _emojiFor(card.kind),
-                style: const TextStyle(fontSize: 36),
-              ),
+              _cardArt(card.kind, card.id),
               const SizedBox(height: 4),
               Text(
                 _labelFor(card.kind),
@@ -100,6 +98,23 @@ class CardView extends StatelessWidget {
       case CardKind.marketDay: return '🛒';
       case CardKind.wind: return '🌬️';
     }
+  }
+
+  // Each card kind maps to a custom SVG with its own gentle breathing motion.
+  Widget _cardArt(CardKind k, String phaseSeed) {
+    final svg = switch (k) {
+      CardKind.tooth => 'card_tooth',
+      CardKind.paw => 'card_paw',
+      CardKind.snout => 'card_snout',
+      CardKind.tit => 'card_tit',
+      CardKind.clever => 'card_clever',
+      CardKind.brave => 'card_brave',
+      CardKind.business => 'card_business',
+      CardKind.rainyDay => 'card_rainyday',
+      CardKind.marketDay => 'card_marketday',
+      CardKind.wind => 'card_wind',
+    };
+    return CuteIcon(svg, size: 42, motion: CuteMotion.breathe, phaseSeed: phaseSeed);
   }
 
   String _labelFor(CardKind k) {

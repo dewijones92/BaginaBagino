@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <!-- Cute tooth with sparkle -->
+  <path d="M 32 32 Q 32 18 60 18 Q 88 18 88 32 Q 88 58 76 90 Q 70 102 60 102 Q 50 102 44 90 Q 32 58 32 32 Z"
+        fill="#FFFDF6" stroke="#3A1F2A" stroke-width="5" stroke-linejoin="round"/>
+  <!-- Highlight -->
+  <path d="M 44 30 Q 44 24 54 24 Q 56 24 56 28 Q 50 28 47 36 Q 45 38 44 30 Z" fill="#FFD0DD" opacity="0.7"/>
+  <!-- Smile -->
+  <path d="M 52 60 Q 60 66 68 60" fill="none" stroke="#3A1F2A" stroke-width="4" stroke-linecap="round"/>
+  <!-- Eyes -->
+  <circle cx="50" cy="48" r="3" fill="#3A1F2A"/>
+  <circle cx="70" cy="48" r="3" fill="#3A1F2A"/>
+  <!-- Sparkle -->
+  <path d="M 92 26 L 96 30 L 92 34 L 88 30 Z" fill="#FFE48A"/>
+</svg>

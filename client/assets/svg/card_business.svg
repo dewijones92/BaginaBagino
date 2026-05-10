@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <!-- Tiny briefcase -->
+  <rect x="22" y="44" width="76" height="56" rx="8" ry="8" fill="#7B4B26" stroke="#3A1F2A" stroke-width="3.5"/>
+  <!-- Handle -->
+  <path d="M 46 44 L 46 36 Q 46 28 60 28 Q 74 28 74 36 L 74 44" fill="none" stroke="#3A1F2A" stroke-width="4" stroke-linecap="round"/>
+  <!-- Latch -->
+  <rect x="52" y="68" width="16" height="10" rx="2" fill="#FFE48A" stroke="#3A1F2A" stroke-width="2"/>
+  <!-- Eyes (because everything is cute) -->
+  <circle cx="40" cy="56" r="3" fill="#3A1F2A"/>
+  <circle cx="80" cy="56" r="3" fill="#3A1F2A"/>
+  <!-- Tiny shine -->
+  <ellipse cx="32" cy="52" rx="4" ry="2" fill="#A06B40" opacity="0.6"/>
+</svg>

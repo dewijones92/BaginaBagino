@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 432 432" width="432" height="432">
+  <!-- Bagino Bagina mascot — cute piggy face. -->
+  <defs>
+    <radialGradient id="cheek" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0%" stop-color="#FF9FB6" stop-opacity="0.85"/>
+      <stop offset="100%" stop-color="#FF9FB6" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Ears (back, behind head) -->
+  <path d="M 110 130 Q 70 50 140 90 Q 165 110 160 160 Z" fill="#E48BA0" stroke="#B96A82" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M 322 130 Q 362 50 292 90 Q 267 110 272 160 Z" fill="#E48BA0" stroke="#B96A82" stroke-width="6" stroke-linejoin="round"/>
+  <!-- Inner ears -->
+  <path d="M 122 122 Q 105 88 138 110 Q 150 130 145 150 Z" fill="#FFB7C5"/>
+  <path d="M 310 122 Q 327 88 294 110 Q 282 130 287 150 Z" fill="#FFB7C5"/>
+
+  <!-- Head -->
+  <ellipse cx="216" cy="232" rx="160" ry="142" fill="#FFC2D2" stroke="#B96A82" stroke-width="7"/>
+
+  <!-- Cheek blushes -->
+  <ellipse cx="106" cy="266" rx="34" ry="22" fill="url(#cheek)"/>
+  <ellipse cx="326" cy="266" rx="34" ry="22" fill="url(#cheek)"/>
+
+  <!-- Eyes — happy curved arcs (closed-smile look) -->
+  <path d="M 156 208 Q 175 188 194 208" fill="none" stroke="#3A1F2A" stroke-width="9" stroke-linecap="round"/>
+  <path d="M 238 208 Q 257 188 276 208" fill="none" stroke="#3A1F2A" stroke-width="9" stroke-linecap="round"/>
+
+  <!-- Snout -->
+  <ellipse cx="216" cy="282" rx="84" ry="58" fill="#FFD0DD" stroke="#B96A82" stroke-width="6"/>
+  <!-- Nostrils -->
+  <ellipse cx="190" cy="282" rx="9" ry="14" fill="#3A1F2A"/>
+  <ellipse cx="242" cy="282" rx="9" ry="14" fill="#3A1F2A"/>
+
+  <!-- Tiny smile peeking under snout -->
+  <path d="M 196 348 Q 216 362 236 348" fill="none" stroke="#3A1F2A" stroke-width="6" stroke-linecap="round"/>
+
+  <!-- Hair tuft on top -->
+  <path d="M 210 92 Q 216 64 226 78 Q 232 70 234 88" fill="none" stroke="#B96A82" stroke-width="7" stroke-linecap="round"/>
+</svg>

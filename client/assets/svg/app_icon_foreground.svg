@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 432 432" width="432" height="432">
+  <!-- Adaptive icon foreground. Android masks 33% off each side, so the
+       piggy needs to live within the inner ~264px (66/108 of canvas).
+       Centred and scaled to ~58% to stay safely inside the mask. -->
+  <g transform="translate(91,98) scale(0.58)">
+    <path d="M 110 130 Q 70 50 140 90 Q 165 110 160 160 Z" fill="#E48BA0" stroke="#B96A82" stroke-width="6" stroke-linejoin="round"/>
+    <path d="M 322 130 Q 362 50 292 90 Q 267 110 272 160 Z" fill="#E48BA0" stroke="#B96A82" stroke-width="6" stroke-linejoin="round"/>
+    <path d="M 122 122 Q 105 88 138 110 Q 150 130 145 150 Z" fill="#FFB7C5"/>
+    <path d="M 310 122 Q 327 88 294 110 Q 282 130 287 150 Z" fill="#FFB7C5"/>
+    <ellipse cx="216" cy="232" rx="160" ry="142" fill="#FFC2D2" stroke="#B96A82" stroke-width="7"/>
+    <path d="M 156 208 Q 175 188 194 208" fill="none" stroke="#3A1F2A" stroke-width="9" stroke-linecap="round"/>
+    <path d="M 238 208 Q 257 188 276 208" fill="none" stroke="#3A1F2A" stroke-width="9" stroke-linecap="round"/>
+    <ellipse cx="216" cy="282" rx="84" ry="58" fill="#FFD0DD" stroke="#B96A82" stroke-width="6"/>
+    <ellipse cx="190" cy="282" rx="9" ry="14" fill="#3A1F2A"/>
+    <ellipse cx="242" cy="282" rx="9" ry="14" fill="#3A1F2A"/>
+    <path d="M 196 348 Q 216 362 236 348" fill="none" stroke="#3A1F2A" stroke-width="6" stroke-linecap="round"/>
+    <path d="M 210 92 Q 216 64 226 78 Q 232 70 234 88" fill="none" stroke="#B96A82" stroke-width="7" stroke-linecap="round"/>
+  </g>
+</svg>
