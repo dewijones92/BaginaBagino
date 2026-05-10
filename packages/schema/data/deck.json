@@ -1,0 +1,14 @@
+{
+  "composition": {
+    "Tooth": 18,
+    "Paw": 18,
+    "Snout": 6,
+    "Tit": 6,
+    "Clever": 2,
+    "Brave": 3,
+    "Business": 4,
+    "RainyDay": 2,
+    "MarketDay": 2,
+    "Wind": 1
+  }
+}

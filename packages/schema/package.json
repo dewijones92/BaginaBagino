@@ -1,0 +1,33 @@
+{
+  "name": "@bagina/schema",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Bagino Bagina wire-schema source of truth (Zod) + Dart codegen pipeline",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./data/balance.json": "./data/balance.json",
+    "./data/board.json": "./data/board.json",
+    "./data/homework.json": "./data/homework.json"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "gen": "tsx tools/gen-jsonschema.ts && bash tools/gen-dart.sh",
+    "test": "vitest run",
+    "lint": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3",
+    "vitest": "^2.1.8",
+    "zod-to-json-schema": "^3.24.1"
+  }
+}

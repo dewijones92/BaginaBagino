@@ -1,0 +1,48 @@
+{
+  "slots": [
+    { "index": 0,  "day": "Mon", "kind": "start" },
+    { "index": 1,  "day": "Mon", "kind": "blank" },
+    { "index": 2,  "day": "Mon", "kind": "blank" },
+    { "index": 3,  "day": "Mon", "kind": "poo" },
+    { "index": 4,  "day": "Mon", "kind": "blank" },
+    { "index": 5,  "day": "Mon", "kind": "blank" },
+    { "index": 6,  "day": "Mon", "kind": "blank" },
+    { "index": 7,  "day": "Mon", "kind": "poo" },
+
+    { "index": 8,  "day": "Tue", "kind": "blank" },
+    { "index": 9,  "day": "Tue", "kind": "blank" },
+    { "index": 10, "day": "Tue", "kind": "blank" },
+    { "index": 11, "day": "Tue", "kind": "blank" },
+    { "index": 12, "day": "Tue", "kind": "poo" },
+    { "index": 13, "day": "Tue", "kind": "blank" },
+    { "index": 14, "day": "Tue", "kind": "blank" },
+    { "index": 15, "day": "Tue", "kind": "blank" },
+
+    { "index": 16, "day": "Wed", "kind": "poo" },
+    { "index": 17, "day": "Wed", "kind": "blank" },
+    { "index": 18, "day": "Wed", "kind": "blank" },
+    { "index": 19, "day": "Wed", "kind": "blank" },
+    { "index": 20, "day": "Wed", "kind": "blank" },
+    { "index": 21, "day": "Wed", "kind": "poo" },
+    { "index": 22, "day": "Wed", "kind": "blank" },
+    { "index": 23, "day": "Wed", "kind": "blank" },
+
+    { "index": 24, "day": "Thu", "kind": "blank" },
+    { "index": 25, "day": "Thu", "kind": "poo" },
+    { "index": 26, "day": "Thu", "kind": "blank" },
+    { "index": 27, "day": "Thu", "kind": "blank" },
+    { "index": 28, "day": "Thu", "kind": "blank" },
+    { "index": 29, "day": "Thu", "kind": "blank" },
+    { "index": 30, "day": "Thu", "kind": "poo" },
+    { "index": 31, "day": "Thu", "kind": "blank" },
+
+    { "index": 32, "day": "Fri", "kind": "blank" },
+    { "index": 33, "day": "Fri", "kind": "blank" },
+    { "index": 34, "day": "Fri", "kind": "poo" },
+    { "index": 35, "day": "Fri", "kind": "blank" },
+    { "index": 36, "day": "Fri", "kind": "blank" },
+    { "index": 37, "day": "Fri", "kind": "blank" },
+    { "index": 38, "day": "Fri", "kind": "blank" },
+    { "index": 39, "day": "Fri", "kind": "end" }
+  ]
+}

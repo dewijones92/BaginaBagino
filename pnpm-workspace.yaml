@@ -1,3 +1,7 @@
 packages:
   - 'packages/*'
   - 'server'
+
+# pnpm 11 needs explicit approval for native build scripts.
+allowBuilds:
+  esbuild: true

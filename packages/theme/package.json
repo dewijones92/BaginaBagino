@@ -1,0 +1,17 @@
+{
+  "name": "@bagina/theme",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Cute palette + spring tokens, codegen to Dart and TS",
+  "type": "module",
+  "scripts": {
+    "gen": "tsx tools/gen.ts",
+    "test": "echo 'no theme tests'",
+    "lint": "tsc --noEmit -p tsconfig.json"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3",
+    "yaml": "^2.6.1"
+  }
+}

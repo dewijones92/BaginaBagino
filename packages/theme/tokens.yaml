@@ -1,0 +1,48 @@
+# Cute, cozy, bouncy theme tokens — single source of truth.
+# Codegens to client/lib/theme/tokens.dart and packages/theme/dist/tokens.ts.
+
+palette:
+  cream: '#FFF7EE'
+  cream_warm: '#FFEFD8'
+  cream_deep: '#F4DEBD'
+  ink: '#3A2C2C'
+  pink: '#FFB1C1'
+  pink_deep: '#FF8FA8'
+  mint: '#B5EAD7'
+  mint_deep: '#88D7BC'
+  lavender: '#D6C5FF'
+  lavender_deep: '#B49CFF'
+  butter: '#FFE4A1'
+  butter_deep: '#FFD06A'
+  poo: '#A98765'
+  poo_glow: '#FFC089'
+  win: '#FF7AA8'
+  uh_oh: '#FF8A6E'
+
+radii:
+  small: 10
+  medium: 16
+  large: 22
+  pill: 999
+
+elevation:
+  none: 0
+  raised: 2
+  card: 4
+
+durations_ms:
+  fast: 140
+  medium: 240
+  slow: 420
+  bouncy: 600
+
+springs:
+  bouncy: { mass: 1.0, stiffness: 180, damping: 11 }
+  springy: { mass: 1.0, stiffness: 240, damping: 16 }
+  gentle: { mass: 1.0, stiffness: 140, damping: 22 }
+
+type_scale:
+  display: { size: 32, weight: 800, line: 38, letter: -0.5 }
+  title: { size: 22, weight: 700, line: 28, letter: -0.2 }
+  body: { size: 16, weight: 500, line: 22, letter: 0 }
+  caption: { size: 13, weight: 500, line: 18, letter: 0.1 }

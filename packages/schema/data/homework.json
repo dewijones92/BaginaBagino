@@ -1,0 +1,34 @@
+{
+  "templates": [
+    {
+      "id": "tooth-hoarder",
+      "title": "Tooth Hoarder",
+      "description": "Finish the week with at least 4 unused Tooth cards in your hand.",
+      "hintTopic": "Tooth"
+    },
+    {
+      "id": "two-of-a-kind",
+      "title": "Two of a Kind",
+      "description": "Complete at least one bagino AND at least one bagina.",
+      "hintTopic": "Both"
+    },
+    {
+      "id": "generous",
+      "title": "Generous",
+      "description": "Initiate at least 2 successful trades over the week.",
+      "hintTopic": "Trade"
+    },
+    {
+      "id": "patient",
+      "title": "Patient",
+      "description": "Don't draw any cards on Monday.",
+      "hintTopic": "Patience"
+    },
+    {
+      "id": "spendthrift",
+      "title": "Spendthrift",
+      "description": "End the game with zero poo tokens.",
+      "hintTopic": "Empty"
+    }
+  ]
+}

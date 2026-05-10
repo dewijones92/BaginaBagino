@@ -1,0 +1,13 @@
+{
+  "drawCostPoo": 3,
+  "pooPerSlot": 2,
+  "businessCardPoo": 5,
+  "completionPoints": 10,
+  "partialPoints": 5,
+  "homeworkBonus": 10,
+  "startingHandSize": 3,
+  "startingPoo": 0,
+  "movesPerPlayer": 40,
+  "slotsPerDay": 8,
+  "days": 5
+}
