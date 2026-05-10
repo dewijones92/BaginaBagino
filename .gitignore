@@ -58,3 +58,4 @@ Thumbs.db
 dev/recordings/*.mp4
 dev/recordings/*.webm
 !dev/recordings/.gitkeep
+dev/recordings/*.png
