@@ -1414,6 +1414,15 @@ const Map<CompletionKind, Map<CardKind, int>> kRecipes = {
 int recipeCardCount(CompletionKind k) =>
     kRecipes[k]!.values.fold(0, (a, b) => a + b);
 
+const int kMovesPerPlayer = 40;
+const int kSlotsPerDay = 8;
+const int kDays = 5;
+const int kDrawCostPoo = 3;
+const int kPooPerSlot = 2;
+const int kStartingHandSize = 3;
+const int kStartingPoo = 3;
+
 // -- Board layout constants (from packages/schema/data/board.json)
 const List<int> kPooSlots = [3, 7, 12, 16, 21, 25, 30, 34];
 const int kTotalSlots = 40;
+const List<Day> kDayOrder = [Day.mon, Day.tue, Day.wed, Day.thu, Day.fri];

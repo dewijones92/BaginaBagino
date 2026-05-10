@@ -97,9 +97,8 @@ class _BoardPainter extends CustomPainter {
       ..strokeWidth = 50;
     canvas.drawCircle(centre, ringRadius, ringPaint);
 
-    // Day labels and slots
-    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
-    const slotsPerDay = 8;
+    // Day labels and slots come from the same balance.json the server uses.
+    final days = kDayOrder.map(DayToJson).toList();
 
     for (var i = 0; i < _slotCount; i++) {
       final p = _slotPosition(i.toDouble(), ringRadius, centre);
@@ -116,7 +115,7 @@ class _BoardPainter extends CustomPainter {
 
     // Day labels at the centre of each day's arc
     for (var d = 0; d < days.length; d++) {
-      final midSlot = d * slotsPerDay + slotsPerDay / 2 - 0.5;
+      final midSlot = d * kSlotsPerDay + kSlotsPerDay / 2 - 0.5;
       final labelPos = _slotPosition(midSlot, ringRadius - 50, centre);
       final tp = TextPainter(
         text: TextSpan(

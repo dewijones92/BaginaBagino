@@ -8,6 +8,7 @@
  * Used by `pnpm playtest` and as the integration gate.
  */
 import { connect, startTestServer, type TestClient } from './harness.js';
+import { pickRecipeCards } from '../engine/_recipes.js';
 import type { LegalActionKind, ServerEvent } from '@bagina/schema';
 
 type ClientView = {
@@ -48,15 +49,9 @@ async function policy(view: ClientView): Promise<void> {
     return;
   }
   if (legal.includes('DeclareCompletion')) {
-    const teeth = view.hand.filter((c) => c.kind === 'Tooth').slice(0, 3).map((c) => c.id);
-    const paws = view.hand.filter((c) => c.kind === 'Paw').slice(0, 2).map((c) => c.id);
-    const snouts = view.hand.filter((c) => c.kind === 'Snout').slice(0, 1).map((c) => c.id);
-    if (teeth.length === 3 && paws.length === 2 && snouts.length === 1) {
-      view.client.send({
-        kind: 'DeclareCompletion',
-        what: 'bagino',
-        cardIds: [...teeth, ...paws, ...snouts],
-      });
+    const cardIds = pickRecipeCards(view.hand, 'bagino');
+    if (cardIds !== null) {
+      view.client.send({ kind: 'DeclareCompletion', what: 'bagino', cardIds });
       return;
     }
   }

@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { pickRecipeCards } from './_recipes.js';
 import {
   emptyLobby,
   addPlayer,
@@ -20,12 +21,10 @@ function autopilotPolicy(state: GameStateInternal, playerId: string): { kind: st
   if (legal.includes('DeclareCompletion')) {
     // Quick heuristic: declare a bagino if we can.
     const me = state.players.find((p) => p.id === playerId)!;
-    const teeth = me.hand.filter((c) => c.kind === 'Tooth').slice(0, 3).map((c) => c.id);
-    const paws = me.hand.filter((c) => c.kind === 'Paw').slice(0, 2).map((c) => c.id);
-    const snouts = me.hand.filter((c) => c.kind === 'Snout').slice(0, 1).map((c) => c.id);
-    if (teeth.length === 3 && paws.length === 2 && snouts.length === 1) {
+    const ids = pickRecipeCards(me.hand, 'bagino');
+    if (ids !== null) {
       // We use a marker action that the caller translates into a fully-typed action.
-      return { kind: 'DeclareCompletion:bagino', cardId: [...teeth, ...paws, ...snouts].join(',') };
+      return { kind: 'DeclareCompletion:bagino', cardId: ids.join(',') };
     }
   }
   if (legal.includes('DrawCard')) return { kind: 'DrawCard' };

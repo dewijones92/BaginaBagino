@@ -568,8 +568,19 @@ function literalDiscriminatorValue(obj: z.ZodObject<any>, key: string): string {
 
 type BalanceJson = {
   recipes: Record<string, Record<string, number>>;
+  movesPerPlayer: number;
+  slotsPerDay: number;
+  days: number;
+  drawCostPoo: number;
+  pooPerSlot: number;
+  businessCardPoo: number;
+  startingHandSize: number;
+  startingPoo: number;
+  completionPoints: number;
+  partialPoints: number;
+  homeworkBonus: number;
 };
-type BoardJson = { slots: { index: number; kind: string }[] };
+type BoardJson = { slots: { index: number; kind: string; day: string }[] };
 
 function emitConstants(): string {
   const balance = loadJson<BalanceJson>('balance.json');
@@ -596,12 +607,24 @@ function emitConstants(): string {
   out.push('int recipeCardCount(CompletionKind k) =>');
   out.push('    kRecipes[k]!.values.fold(0, (a, b) => a + b);');
   out.push('');
+  out.push(`const int kMovesPerPlayer = ${balance.movesPerPlayer};`);
+  out.push(`const int kSlotsPerDay = ${balance.slotsPerDay};`);
+  out.push(`const int kDays = ${balance.days};`);
+  out.push(`const int kDrawCostPoo = ${balance.drawCostPoo};`);
+  out.push(`const int kPooPerSlot = ${balance.pooPerSlot};`);
+  out.push(`const int kStartingHandSize = ${balance.startingHandSize};`);
+  out.push(`const int kStartingPoo = ${balance.startingPoo};`);
+  out.push('');
 
-  // Poo slot indexes — derived from board.json so a layout change auto-syncs.
+  // Board layout — poo slots, total slot count, and the ordered day list.
   const pooSlots = board.slots.filter((s) => s.kind === 'poo').map((s) => s.index);
+  // Preserve order of first appearance.
+  const dayOrder: string[] = [];
+  for (const s of board.slots) if (!dayOrder.includes(s.day)) dayOrder.push(s.day);
   out.push('// -- Board layout constants (from packages/schema/data/board.json)');
   out.push(`const List<int> kPooSlots = [${pooSlots.join(', ')}];`);
   out.push(`const int kTotalSlots = ${board.slots.length};`);
+  out.push(`const List<Day> kDayOrder = [${dayOrder.map((d) => `Day.${identifierize(d)}`).join(', ')}];`);
   out.push('');
 
   return out.join('\n');

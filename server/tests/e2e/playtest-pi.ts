@@ -6,6 +6,7 @@
  *   pnpm --filter server tsx tests/e2e/playtest-pi.ts
  */
 import { io as ioClient, type Socket as ClientSocket } from 'socket.io-client';
+import { pickRecipeCards } from '../engine/_recipes.js';
 import type { GameAction, LegalActionKind, ServerEvent } from '@bagina/schema';
 
 const URL = 'https://333133333.xyz';
@@ -63,16 +64,9 @@ async function policy(c: TestClient, playerId: string) {
   const legal: LegalActionKind[] = snap.legalActions;
   if (legal.includes('MoveToken')) return c.send({ kind: 'MoveToken' });
   if (legal.includes('DeclareCompletion')) {
-    const hand = snap.privateView.hand;
-    const teeth = hand.filter((x) => x.kind === 'Tooth').slice(0, 3).map((x) => x.id);
-    const paws = hand.filter((x) => x.kind === 'Paw').slice(0, 2).map((x) => x.id);
-    const snouts = hand.filter((x) => x.kind === 'Snout').slice(0, 1).map((x) => x.id);
-    if (teeth.length === 3 && paws.length === 2 && snouts.length === 1) {
-      return c.send({
-        kind: 'DeclareCompletion',
-        what: 'bagino',
-        cardIds: [...teeth, ...paws, ...snouts],
-      });
+    const cardIds = pickRecipeCards(snap.privateView.hand, 'bagino');
+    if (cardIds !== null) {
+      return c.send({ kind: 'DeclareCompletion', what: 'bagino', cardIds });
     }
   }
   if (legal.includes('DrawCard')) return c.send({ kind: 'DrawCard' });

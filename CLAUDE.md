@@ -77,6 +77,17 @@ Aggressive DRY across all stacks. This is a project rule, not a suggestion.
 - If you write the same logic twice (once in TS, once in Dart), stop. Move it to the server (preferred for rules) or shared schema (for constants).
 - New constants added on one side without the other getting it via codegen = DRY violation. Push back.
 
+### No magic constants — anywhere, including tests
+
+A "magic constant" is any number, slice index, or string literal that mirrors a value defined elsewhere. Magic constants are silent landmines: the canonical value changes, the magic copy doesn't, and the bug surfaces months later in a way that looks unrelated.
+
+- **Recipe quantities** (`{Tooth: 3, Paw: 2, Snout: 1}`, `slice(0, 3)`, `length === 6`) come from `balance.json` via `kRecipes` / `recipeCardCount(...)` (Dart) or `balance.recipes` (TS). Never inline them.
+- **Board layout** (poo slot indexes, `totalSlots = 40`, `slotsPerDay = 8`, day order) comes from `board.json` via `kPooSlots`, `kTotalSlots`, `kSlotsPerDay`, `kDayOrder` (Dart). The server uses `dayOf()` / `isPooSlot()` from the engine.
+- **Test fixtures** count as code. The bagino-seeker policies in `multi-turn.test.ts`, `end-game.test.ts`, `scenario.test.ts`, `playtest.ts`, `uitest-bot.ts`, and `playtest-pi.ts` all use the shared `pickRecipeCards(hand, what)` helper in `tests/engine/_recipes.ts` — there is **one** definition of what cards satisfy a recipe, used by both production code and tests.
+- **Enum → visual mappings**. `PlayerColor → Color` lives in `extension PlayerColorX` in `client/lib/theme/player_color_ext.dart`. `CardKind → (palette, svg, label)` lives in the `_kCardArt` map in `client/lib/widgets/card_view.dart`. One place per mapping. If you need a swatch or label, import — don't switch.
+
+If a regression happens because two copies of a constant drifted, the fix isn't "update both"; it's "delete one copy and have the other read the canonical value". Add the regression test that would have caught the drift to `recipes.test.ts` or its equivalent.
+
 ## Testing posture — rock-solid coverage, no exceptions
 
 Every change ships with proof. This is a project rule, not a suggestion. The suite must cover **both frontend and backend logic**, and it must run **fast**.

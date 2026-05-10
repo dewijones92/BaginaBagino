@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import balance from '@bagina/schema/data/balance.json' with { type: 'json' };
+import { pickRecipeCards } from './_recipes.js';
 import {
   emptyLobby,
   addPlayer,
@@ -182,11 +183,9 @@ const baginoSeeker: Policy = (s) => {
   const legal = new Set(legalActionsFor(s, active.id));
   if (legal.has('MoveToken')) return { kind: 'MoveToken' };
   if (legal.has('DeclareCompletion')) {
-    const teeth = active.hand.filter((c) => c.kind === 'Tooth').slice(0, 3).map((c) => c.id);
-    const paws = active.hand.filter((c) => c.kind === 'Paw').slice(0, 2).map((c) => c.id);
-    const snouts = active.hand.filter((c) => c.kind === 'Snout').slice(0, 1).map((c) => c.id);
-    if (teeth.length === 3 && paws.length === 2 && snouts.length === 1) {
-      return { kind: 'DeclareCompletion', what: 'bagino', cardIds: [...teeth, ...paws, ...snouts] };
+    const ids = pickRecipeCards(active.hand, 'bagino');
+    if (ids !== null) {
+      return { kind: 'DeclareCompletion', what: 'bagino', cardIds: ids };
     }
   }
   if (legal.has('DrawCard')) return { kind: 'DrawCard' };

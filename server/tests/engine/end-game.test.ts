@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import balance from '@bagina/schema/data/balance.json' with { type: 'json' };
+import { pickRecipeCards } from './_recipes.js';
 import {
   emptyLobby,
   addPlayer,
@@ -27,11 +28,9 @@ const baginoSeeker = (s: GameStateInternal): GameAction => {
   const legal = new Set(legalActionsFor(s, me.id));
   if (legal.has('MoveToken')) return { kind: 'MoveToken' };
   if (legal.has('DeclareCompletion')) {
-    const teeth = me.hand.filter((c) => c.kind === 'Tooth').slice(0, 3).map((c) => c.id);
-    const paws = me.hand.filter((c) => c.kind === 'Paw').slice(0, 2).map((c) => c.id);
-    const snouts = me.hand.filter((c) => c.kind === 'Snout').slice(0, 1).map((c) => c.id);
-    if (teeth.length === 3 && paws.length === 2 && snouts.length === 1) {
-      return { kind: 'DeclareCompletion', what: 'bagino', cardIds: [...teeth, ...paws, ...snouts] };
+    const ids = pickRecipeCards(me.hand, 'bagino');
+    if (ids !== null) {
+      return { kind: 'DeclareCompletion', what: 'bagino', cardIds: ids };
     }
   }
   if (legal.has('DrawCard')) return { kind: 'DrawCard' };
@@ -43,11 +42,9 @@ const baginaSeeker = (s: GameStateInternal): GameAction => {
   const legal = new Set(legalActionsFor(s, me.id));
   if (legal.has('MoveToken')) return { kind: 'MoveToken' };
   if (legal.has('DeclareCompletion')) {
-    const teeth = me.hand.filter((c) => c.kind === 'Tooth').slice(0, 2).map((c) => c.id);
-    const paws = me.hand.filter((c) => c.kind === 'Paw').slice(0, 3).map((c) => c.id);
-    const tits = me.hand.filter((c) => c.kind === 'Tit').slice(0, 1).map((c) => c.id);
-    if (teeth.length === 2 && paws.length === 3 && tits.length === 1) {
-      return { kind: 'DeclareCompletion', what: 'bagina', cardIds: [...teeth, ...paws, ...tits] };
+    const ids = pickRecipeCards(me.hand, 'bagina');
+    if (ids !== null) {
+      return { kind: 'DeclareCompletion', what: 'bagina', cardIds: ids };
     }
   }
   if (legal.has('DrawCard')) return { kind: 'DrawCard' };

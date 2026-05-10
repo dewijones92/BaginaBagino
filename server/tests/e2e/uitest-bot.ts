@@ -5,6 +5,7 @@
  * and is driven by adb taps elsewhere.
  */
 import { io as ioClient, type Socket as ClientSocket } from 'socket.io-client';
+import { pickRecipeCards } from '../engine/_recipes.js';
 import type { GameAction, ServerEvent } from '@bagina/schema';
 
 const URL = 'https://333133333.xyz';
@@ -63,12 +64,9 @@ async function main() {
       const legal = snap.legalActions;
       if (legal.includes('MoveToken')) send({ kind: 'MoveToken' });
       else if (legal.includes('DeclareCompletion')) {
-        const hand = snap.privateView.hand;
-        const teeth = hand.filter((x) => x.kind === 'Tooth').slice(0, 3).map((x) => x.id);
-        const paws = hand.filter((x) => x.kind === 'Paw').slice(0, 2).map((x) => x.id);
-        const snouts = hand.filter((x) => x.kind === 'Snout').slice(0, 1).map((x) => x.id);
-        if (teeth.length === 3 && paws.length === 2 && snouts.length === 1) {
-          send({ kind: 'DeclareCompletion', what: 'bagino', cardIds: [...teeth, ...paws, ...snouts] });
+        const cardIds = pickRecipeCards(snap.privateView.hand, 'bagino');
+        if (cardIds !== null) {
+          send({ kind: 'DeclareCompletion', what: 'bagino', cardIds });
         } else if (legal.includes('DrawCard')) send({ kind: 'DrawCard' });
         else if (legal.includes('EndTurn')) send({ kind: 'EndTurn' });
       } else if (legal.includes('DrawCard')) send({ kind: 'DrawCard' });
