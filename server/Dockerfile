@@ -26,6 +26,7 @@ WORKDIR /app
 # Copy installed deps and workspace package.json metadata.
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/server/node_modules ./server/node_modules
+COPY --from=deps /app/packages/schema/node_modules ./packages/schema/node_modules
 COPY package.json pnpm-workspace.yaml ./
 COPY packages/schema ./packages/schema
 COPY server ./server
