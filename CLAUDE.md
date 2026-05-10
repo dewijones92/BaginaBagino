@@ -50,16 +50,35 @@ pnpm install                       # install all TS workspaces
 pnpm gen                           # regenerate Dart wire types + theme
 pnpm --filter server dev           # run server locally on :3001
 pnpm --filter server test          # vitest (engine + rooms + e2e)
+pnpm test:coverage                 # server tests with coverage thresholds (CI runs this too)
 cd client && flutter pub get
 cd client && flutter run -d chrome --dart-define=SERVER_HOST=localhost   # fastest iteration
 cd client && flutter test          # widget + golden tests
 scripts/run-emulator.sh            # headless bagino AVD with sane WSL flags
 scripts/playtest.sh                # spin server + 4 simulated socket clients to completion
+scripts/dev-public-tunnel.sh up    # expose this laptop's :8888 + :3001 at https://333133333.xyz/bagina-dev/
 ```
 
-## Testing posture
+## Public URLs
 
-Every change should leave the suite green. The engine has property tests — adding a new card or scoring rule means adding a property that proves it terminates and is non-negative. Visual changes ship with at least one golden test.
+- **https://333133333.xyz/bagina/** — production. Static Flutter web bundle on Pi nginx; socket.io proxied to `bagina-server` container. APK clients also point here.
+- **https://333133333.xyz/bagina-dev/** — live dev URL forwarded to dewi's laptop via SSH reverse tunnel. Up only while `scripts/dev-public-tunnel.sh up` has been run AND the laptop's `flutter run -d web-server` is alive. 502s when laptop is offline; that's expected.
+  - Both `/bagina-dev/socket.io/` (port 3001) and the Flutter web bundle (port 8888) are forwarded. Edit code locally, refresh the public tab.
+  - Backed by an nft INPUT-chain allow rule on the Pi (`bagina-dev-firewall.service`) and an nginx partial in `dot-files`.
+
+## Testing posture — rock-solid coverage, no exceptions
+
+Every change ships with proof. This is a project rule, not a suggestion.
+
+- **Bug fixes start with a failing regression test.** Reproduce the bug as a vitest, watch it fail, then fix the code, watch it pass. If you can't write the regression test, you don't understand the bug yet.
+- **New behaviour ships with happy-path + error-path tests.** Every guard you write (`if (!active) return error`) needs a test that exercises the rejection.
+- **Engine reducer changes** (`server/src/engine/*`) get focused unit tests in `server/tests/engine/`. Use property tests in `property.test.ts` for invariants (deck conservation, score non-negativity, termination). Keep the engine suite under 3s total.
+- **Schema changes** are exercised by `pnpm gen` — CI gates a clean `git diff` after regen.
+- **UI changes** ship with at least one widget or golden test. Keep them fast — no full-app launches per test.
+- **If a regression slipped through, write the test that would have caught it _before_ landing the fix.** Otherwise you're paying for the bug twice.
+- **Don't pad coverage.** Each test pins a behaviour worth defending, not a line of code worth counting.
+
+The engine has property tests — adding a new card or scoring rule means adding a property that proves it terminates and is non-negative. Visual changes ship with at least one golden test.
 
 For end-to-end gates, `scripts/playtest.sh` plays a deterministic full game against the live server. If a server change breaks it, fix the server, not the test.
 
