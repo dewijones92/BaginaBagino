@@ -65,11 +65,16 @@ jobs:
 
       - name: Rsync bundle to Pi
         run: |
+          # rrsync on the Pi has the destination pinned to
+          # /home/pi/code/bagina-web/ via the authorized_keys forced-command,
+          # so the remote path here must be RELATIVE to that root ("./" not
+          # the absolute path — otherwise rrsync stacks the paths and the
+          # mkdir fails).
           # --delete-after so old assets don't accumulate when names change
           # between builds. --partial in case of network blips.
           rsync -avz --delete-after --partial \
             client/build/web/ \
-            pi@333133333.xyz:/home/pi/code/bagina-web/
+            pi@333133333.xyz:./
 
       - name: Smoke-test public URL
         run: |
