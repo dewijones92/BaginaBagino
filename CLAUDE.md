@@ -4,7 +4,15 @@ This repo is a monorepo for **Bagino Bagina**, a turn-based multiplayer board ga
 
 ## Tone
 
-UK English everywhere — UI copy, comments, commit messages, docs. The product is meant to feel **cute, bouncy, and cozy**: warm pastels, springy physics, generous corner radii, friendly micro-copy. When in doubt, err softer and rounder.
+UK English everywhere — UI copy, comments, commit messages, docs. The product is meant to feel **cute, bouncy, cozy AND goofy/rude/fun**: warm pastels and springy physics on the visual side, but the writing leans cheeky, daft, slightly rude — think Exploding Kittens or Cards Against Humanity, not Animal Crossing. Pun-heavy. Embrace that the game uses words like *tit*, *snout*, *poo*, *bagino*, *bagina*. Don't sand off the edges.
+
+Examples:
+- Button: "Draw a card" → "Grab one (3 poo)"
+- Error: "Not enough poo to draw" → "Skint! Need more poo."
+- Empty hand: "No cards in hand" → "Your hand is suspiciously empty."
+- Winner: "You won!" → "You absolute legend."
+
+When in doubt, err goofy. Rounded corners and a daft turn of phrase, not corporate cuteness.
 
 ## Stack
 

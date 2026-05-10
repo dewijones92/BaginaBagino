@@ -613,7 +613,34 @@ function emit(state: GameStateInternal, evtNoId: ServerEvent): ServerEvent {
   return { ...evtNoId, eventId: state.lastEventId } as ServerEvent;
 }
 
-function emitError(state: GameStateInternal, message: string): ServerEvent {
+// Goofy error catalogue. Keep these short, daft, UK-flavoured.
+// Engine code references the canonical key; we render the daft text here.
+const ERROR_TEXT: Record<string, string> = {
+  'cannot join: game in progress': "Can't join now — bake's already in the oven.",
+  'room full': 'Room’s rammed. Sling your hook.',
+  'nickname taken': 'Someone nicked that nickname already.',
+  'unknown player': 'Who even are you?',
+  'already moved this turn': 'Oi, you already had your wander.',
+  'no moves remaining': 'Your week’s over, mate.',
+  'not enough poo to draw': 'Skint! Need more poo.',
+  'deck empty': 'Deck’s done. Cosmic emptiness.',
+  'card not in hand': 'You don’t have that card. Cheeky.',
+  'not a special card': 'That’s no special card. Try again.',
+  "can't trade with yourself": 'No trading with yourself, weirdo.',
+  'unknown recipient': 'They’re not here.',
+  'negative amounts': 'Nice try with the negatives.',
+  'not enough poo to offer': 'Promising poo you don’t have, are we?',
+  'no such trade': 'That trade has vanished into the ether.',
+  'not your trade': 'Mind your business, that one isn’t for you.',
+  'players gone': 'Mate left the chat.',
+  'not playing': 'Game’s not on. Have a sit.',
+  'not your turn': 'Patience! Not your shout yet.',
+  'move before acting': 'Take your step first, you maniac.',
+  'must move before ending turn': 'Move first, end later. That’s the order.',
+};
+
+function emitError(state: GameStateInternal, key: string): ServerEvent {
+  const message = ERROR_TEXT[key] ?? key;
   // Errors do NOT advance lastEventId — they're per-client transient.
   return { kind: 'ProtocolError', eventId: state.lastEventId, message };
 }
