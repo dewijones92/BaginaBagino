@@ -42,10 +42,15 @@ else
     exit 1
   fi
 
-  echo "[bagina-emu] booting AVD '$AVD_NAME' on port $EMU_PORT (headless, swiftshader_indirect)…"
+  # Default to visible GUI via WSLg. Set BAGINA_EMU_HEADLESS=1 to override.
+  HEADLESS_FLAG=""
+  if [ "${BAGINA_EMU_HEADLESS:-0}" = "1" ]; then
+    HEADLESS_FLAG="-no-window"
+  fi
+  echo "[bagina-emu] booting AVD '$AVD_NAME' on port $EMU_PORT${HEADLESS_FLAG:+ (headless)}…"
   nohup "$EMULATOR" -avd "$AVD_NAME" \
     -port "$EMU_PORT" \
-    -no-window \
+    $HEADLESS_FLAG \
     -no-audio \
     -no-snapshot-save \
     -no-boot-anim \

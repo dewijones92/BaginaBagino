@@ -55,15 +55,24 @@ jobs:
           BAGINA_KEYSTORE_PASSWORD: ${{ secrets.BAGINA_KEYSTORE_PASSWORD }}
           BAGINA_KEY_ALIAS: ${{ secrets.BAGINA_KEY_ALIAS }}
           BAGINA_KEY_PASSWORD: ${{ secrets.BAGINA_KEY_PASSWORD }}
+        # Two builds per run:
+        #   - universal APK (works on every ABI; this is what Obtainium picks)
+        #   - split-per-abi APKs (smaller per-device, kept for sideloaders)
         # build-number is the Android versionCode; using github.run_number
         # gives a strictly increasing value so updates install over old
         # builds without needing to uninstall.
         run: |
-          flutter build apk --release --split-per-abi \
-            --dart-define=SERVER_HOST=333133333.xyz \
-            --dart-define=SERVER_PATH=/bagina \
-            --dart-define=SERVER_TLS=true \
+          DEFINES=(
+            --dart-define=SERVER_HOST=333133333.xyz
+            --dart-define=SERVER_PATH=/bagina
+            --dart-define=SERVER_TLS=true
             --build-number=${{ github.run_number }}
+          )
+          flutter build apk --release "${DEFINES[@]}"
+          # Rename the universal output so Obtainium has a stable filter target.
+          mv build/app/outputs/flutter-apk/app-release.apk \
+             build/app/outputs/flutter-apk/bagina-universal-release.apk
+          flutter build apk --release --split-per-abi "${DEFINES[@]}"
 
       - name: Compute version tag
         id: tag
@@ -75,11 +84,16 @@ jobs:
           tag_name: ${{ steps.tag.outputs.tag }}
           name: Bagino Bagina ${{ steps.tag.outputs.tag }}
           body: |
-            Auto-built APKs from commit ${{ github.sha }}.
-            Install over any previous version — same signing key.
+            Auto-built signed APKs from commit ${{ github.sha }}.
+            Installs over any previous version — same signing key.
+
+            **Recommended:** `bagina-universal-release.apk` (works on every device, picked by Obtainium).
+            Smaller per-ABI variants are also attached for power users.
+
             Server: https://333133333.xyz/bagina/
           generate_release_notes: true
           files: |
+            client/build/app/outputs/flutter-apk/bagina-universal-release.apk
             client/build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
             client/build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
             client/build/app/outputs/flutter-apk/app-x86_64-release.apk

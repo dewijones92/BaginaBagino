@@ -75,6 +75,7 @@ There may be other AI agents on this machine running their own AVDs. **Do not to
 
 - Our emulator binds to **port 5582** (device ID `emulator-5582`). PID lives in `/tmp/bagina-emulator.pid`.
 - `scripts/run-emulator.sh` only ever starts/checks/owns that one instance and refuses to take the port if it's already busy.
+- Default is **windowed (GUI visible via WSLg)** — Dewi wants to see what's happening, not just trust screenshots. Set `BAGINA_EMU_HEADLESS=1` only if you have a clear reason (e.g., CI).
 - `scripts/stop-emulator.sh` only kills our PID and our device ID.
 - If you ever find yourself running `adb -s emulator-5554 emu kill`, stop. That's somebody else's.
 
