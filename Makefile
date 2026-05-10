@@ -1,4 +1,4 @@
-.PHONY: doctor install gen test test-server test-client lint clean dev-server dev-client emulator playtest deploy-pi help
+.PHONY: doctor install gen test test-server test-client test-coverage lint clean dev-server dev-client emulator playtest deploy-pi help
 
 # Toolchain paths (override with env if needed)
 FLUTTER_BIN ?= /home/dewi/code/flutter/bin/flutter
@@ -16,6 +16,7 @@ help:
 	@echo "  make install      — pnpm install + flutter pub get"
 	@echo "  make gen          — regenerate wire types and theme"
 	@echo "  make test         — run all tests"
+	@echo "  make test-coverage— run server tests with coverage thresholds"
 	@echo "  make dev-server   — run server with watch"
 	@echo "  make dev-client   — run flutter on emulator"
 	@echo "  make emulator     — boot the bagino AVD headless"
@@ -47,6 +48,12 @@ test-server:
 
 test-client:
 	cd client && $(FLUTTER_BIN) test
+
+# Rock-solid coverage rule (CLAUDE.md): run this before merging anything.
+# Fails if engine/transport/rooms drop below the thresholds in
+# server/vitest.config.ts.
+test-coverage:
+	pnpm --filter server run test:coverage
 
 lint:
 	pnpm -r run lint

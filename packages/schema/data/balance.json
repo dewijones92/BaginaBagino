@@ -6,7 +6,7 @@
   "partialPoints": 5,
   "homeworkBonus": 10,
   "startingHandSize": 3,
-  "startingPoo": 0,
+  "startingPoo": 3,
   "movesPerPlayer": 40,
   "slotsPerDay": 8,
   "days": 5

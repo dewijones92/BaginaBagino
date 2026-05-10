@@ -146,11 +146,31 @@ function startGame(state: GameStateInternal): Reduction {
   next.deck = buildDeck(rng);
   next.homework = rollHomework(rng);
 
-  // Deal starting hands.
+  // Deal starting hands — only resource/keepable cards. Events fire on draw
+  // and Business auto-resolves on draw, so neither belongs in a starting hand
+  // (otherwise they get stuck there forever, no way to leave). Push any
+  // non-keepable cards we hit to the bottom of the deck so they're still
+  // playable later in the game.
   for (const p of next.players) {
-    for (let i = 0; i < STARTING_HAND_SIZE; i++) {
+    let dealt = 0;
+    let attempts = 0;
+    while (dealt < STARTING_HAND_SIZE && attempts < next.deck.length * 2) {
+      attempts += 1;
       const card = next.deck.shift();
-      if (card) p.hand.push(card);
+      if (!card) break;
+      if (
+        card.kind === 'Tooth' ||
+        card.kind === 'Paw' ||
+        card.kind === 'Snout' ||
+        card.kind === 'Tit' ||
+        card.kind === 'Clever' ||
+        card.kind === 'Brave'
+      ) {
+        p.hand.push(card);
+        dealt += 1;
+      } else {
+        next.deck.push(card);
+      }
     }
   }
 

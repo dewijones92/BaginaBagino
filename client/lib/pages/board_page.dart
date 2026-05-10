@@ -29,6 +29,34 @@ class _BoardPageState extends ConsumerState<BoardPage> {
     });
   }
 
+  // Show the player how close they are to a Bagino (3 Tooth + 2 Paw + 1 Snout)
+  // or a Bagina (2 Tooth + 3 Paw + 1 Tit) so resource cards feel useful.
+  String _handHint(GameStateSnapshot state) {
+    int count(CardKind k) => state.hand.where((c) => c.kind == k).length;
+    final teeth = count(CardKind.tooth);
+    final paws = count(CardKind.paw);
+    final snouts = count(CardKind.snout);
+    final tits = count(CardKind.tit);
+    final baginoMissing = [
+      if (teeth < 3) '${3 - teeth} more Tooth',
+      if (paws < 2) '${2 - paws} more Paw',
+      if (snouts < 1) '${1 - snouts} Snout',
+    ];
+    final baginaMissing = [
+      if (teeth < 2) '${2 - teeth} more Tooth',
+      if (paws < 3) '${3 - paws} more Paw',
+      if (tits < 1) '${1 - tits} Tit',
+    ];
+    if (baginoMissing.isEmpty) {
+      return 'Tap 3 Teeth + 2 Paws + 1 Snout, then "Declare!"';
+    }
+    if (baginaMissing.isEmpty) {
+      return 'Tap 2 Teeth + 3 Paws + 1 Tit, then "Declare!"';
+    }
+    final closer = baginoMissing.length <= baginaMissing.length ? ('Bagino', baginoMissing) : ('Bagina', baginaMissing);
+    return 'Closest to ${closer.$1}: need ${closer.$2.join(' + ')}.';
+  }
+
   @override
   Widget build(BuildContext context) {
     ref.listen<GameStateSnapshot?>(gameStateProvider, (prev, next) {
@@ -100,27 +128,46 @@ class _BoardPageState extends ConsumerState<BoardPage> {
                     const SizedBox(height: 16),
                     Text('Actions', style: BaginaTypeScale.title),
                     const SizedBox(height: 8),
-                    if (state.legalActions.isEmpty)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        child: Center(
-                          child: Text(
-                            state.isMyTurn ? 'No legal moves. Press your luck.' : 'Wait for your turn, you keen bean.',
-                            style: BaginaTypeScale.caption.copyWith(color: BaginaPalette.ink.withValues(alpha: 0.6)),
+                    Builder(builder: (context) {
+                      // Trades aren't wired in the UI yet, so don't render
+                      // their buttons. The server still accepts the actions
+                      // for clients that learn the protocol.
+                      final wired = state.legalActions
+                          .where((a) =>
+                              a != LegalActionKind.offerTrade &&
+                              a != LegalActionKind.respondTrade)
+                          .toList();
+                      if (wired.isEmpty) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          child: Center(
+                            child: Text(
+                              state.isMyTurn ? 'No legal moves. Press your luck.' : 'Wait for your turn, you keen bean.',
+                              style: BaginaTypeScale.caption.copyWith(color: BaginaPalette.ink.withValues(alpha: 0.6)),
+                            ),
                           ),
-                        ),
-                      )
-                    else
-                      Wrap(
+                        );
+                      }
+                      return Wrap(
                         spacing: 10,
                         runSpacing: 10,
-                        children: state.legalActions.map((a) => _ActionButton(
-                          action: a,
-                          selectedIds: _selected,
-                          onSent: () => setState(_selected.clear),
-                          onSend: socket.send,
-                        )).toList(),
+                        children: wired
+                            .map((a) => _ActionButton(
+                                  action: a,
+                                  selectedIds: _selected,
+                                  onSent: () => setState(_selected.clear),
+                                  onSend: socket.send,
+                                ))
+                            .toList(),
+                      );
+                    }),
+                    if (state.isMyTurn && state.hand.isNotEmpty) ...[
+                      const SizedBox(height: 10),
+                      Text(
+                        _handHint(state),
+                        style: BaginaTypeScale.caption.copyWith(color: BaginaPalette.ink.withValues(alpha: 0.65)),
                       ),
+                    ],
                     const SizedBox(height: 24),
                     if (state.homeworkHints.isNotEmpty) ...[
                       Text('Homework whispers', style: BaginaTypeScale.title),

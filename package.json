@@ -10,6 +10,7 @@
   "scripts": {
     "gen": "pnpm --filter @bagina/schema run gen && pnpm --filter @bagina/theme run gen",
     "test": "pnpm -r run test",
+    "test:coverage": "pnpm --filter server run test:coverage",
     "lint": "pnpm -r run lint",
     "build": "pnpm -r run build",
     "playtest": "pnpm --filter server run playtest"
