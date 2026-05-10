@@ -1,0 +1,83 @@
+name: Web release
+
+on:
+  push:
+    branches: [main]
+    # Only re-deploy if something in the web bundle (or its source schema)
+    # could have changed. Avoids burning Pi bandwidth on unrelated commits.
+    paths:
+      - 'client/**'
+      - 'packages/schema/**'
+      - 'packages/theme/**'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/web-deploy.yml'
+  workflow_dispatch:
+
+concurrency:
+  # Single in-flight deploy; queue + cancel older ones.
+  group: web-deploy
+  cancel-in-progress: true
+
+jobs:
+  build_and_deploy:
+    name: Build + deploy web bundle to Pi
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm gen
+      - run: pnpm --filter server run test          # gate: tests must pass
+
+      - working-directory: client
+        run: flutter pub get
+      - working-directory: client
+        run: flutter analyze
+      - working-directory: client
+        run: flutter test
+      - name: Build web bundle
+        working-directory: client
+        run: |
+          flutter build web --release \
+            --base-href=/bagina/ \
+            --dart-define=SERVER_HOST=333133333.xyz \
+            --dart-define=SERVER_PATH=/bagina \
+            --dart-define=SERVER_TLS=true
+
+      - name: Set up SSH key
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.BAGINA_DEPLOY_SSH_KEY }}
+
+      - name: Trust the Pi's host key
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H 333133333.xyz >> ~/.ssh/known_hosts
+
+      - name: Rsync bundle to Pi
+        run: |
+          # --delete-after so old assets don't accumulate when names change
+          # between builds. --partial in case of network blips.
+          rsync -avz --delete-after --partial \
+            client/build/web/ \
+            pi@333133333.xyz:/home/pi/code/bagina-web/
+
+      - name: Smoke-test public URL
+        run: |
+          # Healthz proves nginx + socket server reachable; the index +
+          # main.dart.js prove the bundle deployed correctly.
+          set -e
+          curl -fsSL https://333133333.xyz/bagina/healthz -o /dev/null
+          curl -fsSL https://333133333.xyz/bagina/ -o /tmp/idx.html
+          grep -q '<base href="/bagina/">' /tmp/idx.html
+          curl -fsSL -o /dev/null https://333133333.xyz/bagina/main.dart.js
+          echo "OK — https://333133333.xyz/bagina/ is serving the new bundle"
