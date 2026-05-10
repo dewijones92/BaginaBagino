@@ -284,23 +284,23 @@ String CardKindToJson(CardKind v) {
   }
 }
 
-class Card {
+class GameCard {
   final String id;
   final CardKind kind;
 
-  const Card({
+  const GameCard({
     required this.id,
     required this.kind,
   });
 
-  factory Card.fromJson(Map<String, dynamic> json) => Card(
+  factory GameCard.fromJson(Map<String, dynamic> json) => GameCard(
     id: json['id'] as String,
     kind: CardKindFromJson(json['kind'] as String),
   );
 
   Map<String, dynamic> toJson() => {
     'id': this.id,
-    'kind': this.kind == null ? null : CardKindToJson(this.kind!),
+    'kind': CardKindToJson(this.kind),
   };
 }
 
@@ -342,7 +342,7 @@ class PublicPlayer {
   Map<String, dynamic> toJson() => {
     'id': this.id,
     'nickname': this.nickname,
-    'color': this.color == null ? null : PlayerColorToJson(this.color!),
+    'color': PlayerColorToJson(this.color),
     'slot': this.slot,
     'poo': this.poo,
     'handCount': this.handCount,
@@ -383,7 +383,7 @@ class PublicGameState {
 
   Map<String, dynamic> toJson() => {
     'code': this.code,
-    'phase': this.phase == null ? null : RoomPhaseToJson(this.phase!),
+    'phase': RoomPhaseToJson(this.phase),
     'players': this.players.map((e) => e.toJson()).toList(),
     'activePlayerId': this.activePlayerId,
     'turnsRemaining': this.turnsRemaining,
@@ -393,7 +393,7 @@ class PublicGameState {
 }
 
 class PrivatePlayerView {
-  final List<Card> hand;
+  final List<GameCard> hand;
   final List<HomeworkHint> homeworkHints;
   final String? homeworkRevealed;
 
@@ -404,7 +404,7 @@ class PrivatePlayerView {
   });
 
   factory PrivatePlayerView.fromJson(Map<String, dynamic> json) => PrivatePlayerView(
-    hand: (json['hand'] as List).map((e) => Card.fromJson(e as Map<String, dynamic>)).toList(),
+    hand: (json['hand'] as List).map((e) => GameCard.fromJson(e as Map<String, dynamic>)).toList(),
     homeworkHints: (json['homeworkHints'] as List).map((e) => HomeworkHint.fromJson(e as Map<String, dynamic>)).toList(),
     homeworkRevealed: json['homeworkRevealed'] == null ? null : json['homeworkRevealed'] as String,
   );
@@ -587,15 +587,12 @@ final class JoinRoomAction extends GameAction {
 }
 
 final class LeaveRoomAction extends GameAction {
-
-  const LeaveRoomAction({
-  });
+  const LeaveRoomAction();
 
   @override
   String get kind => 'LeaveRoom';
 
-  factory LeaveRoomAction.fromJson(Map<String, dynamic> json) => LeaveRoomAction(
-  );
+  factory LeaveRoomAction.fromJson(Map<String, dynamic> _json) => const LeaveRoomAction();
 
   @override
   Map<String, dynamic> toJson() => {
@@ -625,15 +622,12 @@ final class SetReadyAction extends GameAction {
 }
 
 final class MoveTokenAction extends GameAction {
-
-  const MoveTokenAction({
-  });
+  const MoveTokenAction();
 
   @override
   String get kind => 'MoveToken';
 
-  factory MoveTokenAction.fromJson(Map<String, dynamic> json) => MoveTokenAction(
-  );
+  factory MoveTokenAction.fromJson(Map<String, dynamic> _json) => const MoveTokenAction();
 
   @override
   Map<String, dynamic> toJson() => {
@@ -642,15 +636,12 @@ final class MoveTokenAction extends GameAction {
 }
 
 final class DrawCardAction extends GameAction {
-
-  const DrawCardAction({
-  });
+  const DrawCardAction();
 
   @override
   String get kind => 'DrawCard';
 
-  factory DrawCardAction.fromJson(Map<String, dynamic> json) => DrawCardAction(
-  );
+  factory DrawCardAction.fromJson(Map<String, dynamic> _json) => const DrawCardAction();
 
   @override
   Map<String, dynamic> toJson() => {
@@ -765,21 +756,18 @@ final class DeclareCompletionAction extends GameAction {
   @override
   Map<String, dynamic> toJson() => {
     'kind': 'DeclareCompletion',
-    'what': this.what == null ? null : CompletionKindToJson(this.what!),
+    'what': CompletionKindToJson(this.what),
     'cardIds': this.cardIds,
   };
 }
 
 final class EndTurnAction extends GameAction {
-
-  const EndTurnAction({
-  });
+  const EndTurnAction();
 
   @override
   String get kind => 'EndTurn';
 
-  factory EndTurnAction.fromJson(Map<String, dynamic> json) => EndTurnAction(
-  );
+  factory EndTurnAction.fromJson(Map<String, dynamic> _json) => const EndTurnAction();
 
   @override
   Map<String, dynamic> toJson() => {
@@ -1130,14 +1118,14 @@ final class PooAwardedEvent extends ServerEvent {
     'eventId': this.eventId,
     'playerId': this.playerId,
     'amount': this.amount,
-    'reason': this.reason == null ? null : PooReasonToJson(this.reason!),
+    'reason': PooReasonToJson(this.reason),
   };
 }
 
 final class CardDrawnEvent extends ServerEvent {
   final int eventId;
   final String playerId;
-  final Card? card;
+  final GameCard? card;
 
   const CardDrawnEvent({
     required this.eventId,
@@ -1151,7 +1139,7 @@ final class CardDrawnEvent extends ServerEvent {
   factory CardDrawnEvent.fromJson(Map<String, dynamic> json) => CardDrawnEvent(
     eventId: (json['eventId'] as num).toInt(),
     playerId: json['playerId'] as String,
-    card: json['card'] == null ? null : Card.fromJson(json['card'] as Map<String, dynamic>),
+    card: json['card'] == null ? null : GameCard.fromJson(json['card'] as Map<String, dynamic>),
   );
 
   @override
@@ -1188,7 +1176,7 @@ final class CardPlayedEvent extends ServerEvent {
     'kind': 'CardPlayed',
     'eventId': this.eventId,
     'playerId': this.playerId,
-    'cardKind': this.cardKind == null ? null : SpecialCardKindToJson(this.cardKind!),
+    'cardKind': SpecialCardKindToJson(this.cardKind),
   };
 }
 
@@ -1271,7 +1259,7 @@ final class CompletionDeclaredEvent extends ServerEvent {
     'kind': 'CompletionDeclared',
     'eventId': this.eventId,
     'playerId': this.playerId,
-    'what': this.what == null ? null : CompletionKindToJson(this.what!),
+    'what': CompletionKindToJson(this.what),
   };
 }
 
@@ -1296,7 +1284,7 @@ final class EventCardTriggeredEvent extends ServerEvent {
   Map<String, dynamic> toJson() => {
     'kind': 'EventCardTriggered',
     'eventId': this.eventId,
-    'card': this.card == null ? null : EventCardKindToJson(this.card!),
+    'card': EventCardKindToJson(this.card),
   };
 }
 

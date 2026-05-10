@@ -3,7 +3,6 @@
 // Regenerate with: pnpm --filter @bagina/theme run gen
 // ignore_for_file: type=lint
 import 'package:flutter/material.dart';
-import 'package:flutter/physics.dart';
 
 class BaginaPalette {
   static const cream = Color(0xFFFFF7EE);

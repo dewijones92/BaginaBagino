@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Card, CompletionKind, EventCardKind, PartialKind, SpecialCardKind } from './cards.js';
+import { GameCard, CompletionKind, EventCardKind, PartialKind, SpecialCardKind } from './cards.js';
 import { LegalActionKind } from './actions.js';
 import {
   HomeworkHint,
@@ -87,7 +87,7 @@ export const CardDrawnEvent = Eventy.extend({
   kind: z.literal('CardDrawn'),
   playerId: PlayerId,
   // Public to all; only the owner gets `card`.
-  card: Card.nullable(),
+  card: GameCard.nullable(),
 });
 
 export const CardPlayedEvent = Eventy.extend({

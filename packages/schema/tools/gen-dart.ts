@@ -61,7 +61,7 @@ import {
   TradeOffer,
   HomeworkHint,
 } from '../src/state.js';
-import { Card } from '../src/cards.js';
+import { GameCard } from '../src/cards.js';
 
 // ---------------------------------------------------------------------------
 // Zod introspection helpers
@@ -201,7 +201,7 @@ const FLATTENED_CARD_KIND = [
 ] as const;
 
 const NAMED_OBJECTS: Record<string, z.ZodObject<any>> = {
-  Card: Card as z.ZodObject<any>,
+  GameCard: GameCard as z.ZodObject<any>,
   PublicPlayer: PublicPlayer as z.ZodObject<any>,
   PublicGameState: PublicGameState as z.ZodObject<any>,
   PrivatePlayerView: PrivatePlayerView as z.ZodObject<any>,
@@ -391,14 +391,15 @@ function dartFromJsonExpr(f: Field, jsonAccess: string): string {
 
 function dartToJsonExpr(f: Field): string {
   const access = `this.${dartFieldName(f.name)}`;
+  const isOpt = f.optional || f.nullable;
   const handleList = (inner: string) => {
     if (['String', 'int', 'num', 'bool'].includes(inner)) {
       return access;
     }
     if (isEnumName(inner)) {
-      return `${access}${f.optional || f.nullable ? '?' : ''}.map((e) => ${inner}ToJson(e)).toList()`;
+      return `${access}${isOpt ? '?' : ''}.map((e) => ${inner}ToJson(e)).toList()`;
     }
-    return `${access}${f.optional || f.nullable ? '?' : ''}.map((e) => e.toJson()).toList()`;
+    return `${access}${isOpt ? '?' : ''}.map((e) => e.toJson()).toList()`;
   };
   if (f.isList) {
     const inner = f.type.replace(/^List<(.+)>$/, '$1');
@@ -408,9 +409,15 @@ function dartToJsonExpr(f: Field): string {
     return access;
   }
   if (isEnumName(f.type)) {
-    return `${access}${f.optional || f.nullable ? '?' : ''} == null ? null : ${f.type}ToJson(${access}!)`;
+    if (isOpt) {
+      return `${access} == null ? null : ${f.type}ToJson(${access}!)`;
+    }
+    return `${f.type}ToJson(${access})`;
   }
-  return `${access}${f.optional || f.nullable ? '?' : ''}.toJson()`;
+  if (isOpt) {
+    return `${access}?.toJson()`;
+  }
+  return `${access}.toJson()`;
 }
 
 const ENUM_CONTEXT = new Set<string>();
@@ -500,21 +507,30 @@ function emitUnion(name: string, def: UnionDef, ctx: GenContext): string {
   for (const v of def.variants) {
     const fields = objectFields(v.obj, ctx).filter((f) => f.name !== def.discriminator);
     const lit = literalDiscriminatorValue(v.obj, def.discriminator);
+    const empty = fields.length === 0;
     out.push(`final class ${v.name} extends ${name} {`);
     for (const f of fields) out.push(dartFieldDecl(f));
-    out.push('');
-    out.push(`  const ${v.name}({`);
-    for (const f of fields) out.push(dartCtorParam(f));
-    out.push(`  });`);
+    if (!empty) out.push('');
+    if (empty) {
+      out.push(`  const ${v.name}();`);
+    } else {
+      out.push(`  const ${v.name}({`);
+      for (const f of fields) out.push(dartCtorParam(f));
+      out.push(`  });`);
+    }
     out.push('');
     out.push(`  @override`);
     out.push(`  String get kind => '${lit}';`);
     out.push('');
-    out.push(`  factory ${v.name}.fromJson(Map<String, dynamic> json) => ${v.name}(`);
-    for (const f of fields) {
-      out.push(`    ${f.name}: ${dartFromJsonExpr(f, `json['${f.name}']`)},`);
+    if (empty) {
+      out.push(`  factory ${v.name}.fromJson(Map<String, dynamic> _json) => const ${v.name}();`);
+    } else {
+      out.push(`  factory ${v.name}.fromJson(Map<String, dynamic> json) => ${v.name}(`);
+      for (const f of fields) {
+        out.push(`    ${f.name}: ${dartFromJsonExpr(f, `json['${f.name}']`)},`);
+      }
+      out.push(`  );`);
     }
-    out.push(`  );`);
     out.push('');
     out.push(`  @override`);
     out.push(`  Map<String, dynamic> toJson() => {`);

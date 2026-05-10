@@ -39,8 +39,8 @@ dart.push('// GENERATED FILE — do not edit by hand.');
 dart.push('// Source: packages/theme/tokens.yaml');
 dart.push('// Regenerate with: pnpm --filter @bagina/theme run gen');
 dart.push("// ignore_for_file: type=lint");
+// Material re-exports SpringDescription from physics, so a single import suffices.
 dart.push("import 'package:flutter/material.dart';");
-dart.push("import 'package:flutter/physics.dart';");
 dart.push('');
 dart.push('class BaginaPalette {');
 for (const [name, hex] of Object.entries(tokens.palette)) {

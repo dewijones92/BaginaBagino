@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Card, CompletionKind } from './cards.js';
+import { GameCard, CompletionKind } from './cards.js';
 
 export const PlayerId = z.string();
 export type PlayerId = z.infer<typeof PlayerId>;
@@ -53,7 +53,7 @@ export const HomeworkHint = z.object({
 export type HomeworkHint = z.infer<typeof HomeworkHint>;
 
 export const PrivatePlayerView = z.object({
-  hand: z.array(Card),
+  hand: z.array(GameCard),
   homeworkHints: z.array(HomeworkHint),
   homeworkRevealed: z.string().nullable(),
 });

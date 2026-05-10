@@ -26,11 +26,11 @@ export const isSpecialCardKind = (k: CardKind): k is SpecialCardKind =>
 export const isEventCardKind = (k: CardKind): k is EventCardKind =>
   EventCardKind.safeParse(k).success;
 
-export const Card = z.object({
+export const GameCard = z.object({
   id: z.string(),
   kind: CardKind,
 });
-export type Card = z.infer<typeof Card>;
+export type GameCard = z.infer<typeof GameCard>;
 
 export const CompletionKind = z.enum(['bagino', 'bagina']);
 export type CompletionKind = z.infer<typeof CompletionKind>;

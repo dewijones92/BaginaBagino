@@ -1,6 +1,6 @@
 import balance from '@bagina/schema/data/balance.json' with { type: 'json' };
 import type {
-  Card,
+  GameCard,
   CardKind,
   CompletionKind,
   GameAction,
@@ -482,7 +482,7 @@ function declareCompletion(
   // Validate: each id is in hand, and the multiset matches the recipe.
   const cards = cardIds
     .map((id) => me.hand.find((c) => c.id === id))
-    .filter((c): c is Card => !!c);
+    .filter((c): c is GameCard => !!c);
   if (cards.length !== cardIds.length) {
     return { state, events: [emitError(state, 'card not in hand')] };
   }

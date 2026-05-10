@@ -9,7 +9,7 @@ import {
   TradeOffer,
   PublicPlayer,
 } from '../src/state.js';
-import { Card } from '../src/cards.js';
+import { GameCard } from '../src/cards.js';
 
 const out = (path: string, value: unknown) => {
   mkdirSync(dirname(path), { recursive: true });
@@ -27,6 +27,6 @@ out(`${cwd}/dist/schema.json`, {
     PrivatePlayerView: zodToJsonSchema(PrivatePlayerView),
     PublicPlayer: zodToJsonSchema(PublicPlayer),
     TradeOffer: zodToJsonSchema(TradeOffer),
-    Card: zodToJsonSchema(Card),
+    GameCard: zodToJsonSchema(GameCard),
   },
 });

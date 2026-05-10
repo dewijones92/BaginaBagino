@@ -1,5 +1,5 @@
 import type {
-  Card,
+  GameCard,
   CompletionKind,
   PlayerColor,
   PlayerId,
@@ -24,7 +24,7 @@ export type PlayerInternal = {
   color: PlayerColor;
   slot: number;
   poo: number;
-  hand: Card[];
+  hand: GameCard[];
   completed: CompletionKind[];
   ready: boolean;
   online: boolean;
@@ -37,8 +37,8 @@ export type GameStateInternal = {
   phase: RoomPhase;
   players: PlayerInternal[];
   activePlayerIndex: number;
-  deck: Card[];
-  discard: Card[];
+  deck: GameCard[];
+  discard: GameCard[];
   homework: HomeworkTemplate;
   pendingTrades: TradeOffer[];
   lastEventId: number;
